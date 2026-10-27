@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oficina de Capulanas Modular — CriaNauta</title>
+  
+  <!-- Google Fonts: Fredoka & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { 800: '#0B253C', 900: '#071828' },
+            teal: { 500: '#0EA5E9' },
+            gold: { 500: '#F59E0B' },
+            paper: '#FDFBF7'
+          },
+          fontFamily: {
+            title: ['Fredoka', 'sans-serif'],
+            body: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #FDFBF7; color: #0B253C; }
+    h1, h2, h3, h4, .font-title { font-family: 'Fredoka', sans-serif; }
+    .cloth-stage {
+      background-color: #EFEBE4;
+      background-image: radial-gradient(#D6CEBF 1.5px, transparent 1.5px);
+      background-size: 16px 16px;
+    }
+    .module-card.selected { border-color: #F59E0B; background-color: #FFFBEB; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.3); }
+    .color-card.selected { border-color: #0EA5E9; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.4); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-white">
+
+  <!-- CABEÇALHO / NAVEGAÇÃO -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <img src="logo_CriaNauta_3.png" alt="Logótipo CriaNauta" class="h-12 w-auto object-contain transition-transform group-hover:scale-105" onerror="this.src='logo_CriaNauta_2.png'">
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-title px-4 py-2 rounded-full text-sm transition-all border border-slate-200">
+          <i class="fa-solid fa-arrow-left text-xs"></i>
+          <span>Voltar ao Início</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col gap-6">
+
+    <!-- HERO INTRO -->
+    <section class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+      <div>
+        <span class="inline-block px-2.5 py-0.5 bg-amber-500/10 text-amber-600 text-xs font-bold rounded mb-1">ARTEFACTO PATRIMONIAL & MODULAR</span>
+        <h1 class="text-2xl sm:text-3xl font-bold text-navy-800">Oficina de Capulanas (Módulos Têxteis)</h1>
+        <p class="text-slate-600 text-sm">Encaixa blocos geométricos tradicionais, roda motivos e cria padrões de capulanas inspirados na cultura dos PALOP.</p>
+      </div>
+
+      <!-- Quick Presets -->
+      <div class="flex items-center gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200 flex-wrap">
+        <span class="text-xs font-bold text-navy-800 px-2 font-title">Padrões:</span>
+        <button onclick="loadPreset('sol')" class="px-2.5 py-1.5 bg-white hover:bg-amber-50 text-slate-700 hover:text-amber-600 border border-slate-200 rounded-lg text-xs font-semibold transition-all">☀️ Sol Nascente</button>
+        <button onclick="loadPreset('geom')" class="px-2.5 py-1.5 bg-white hover:bg-amber-50 text-slate-700 hover:text-amber-600 border border-slate-200 rounded-lg text-xs font-semibold transition-all">🔶 Geometria Viva</button>
+      </div>
+    </section>
+
+    <!-- WORKSPACE -->
+    <div class="grid lg:grid-cols-12 gap-6 items-start">
+
+      <!-- TOOLBAR PANEL (MODULAR) -->
+      <aside class="lg:col-span-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-5">
+        <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+          <h2 class="font-title font-bold text-navy-800 text-lg">Módulos & Cores</h2>
+          <span class="text-xs bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded">Tecelão</span>
+        </div>
+
+        <!-- Geometric Modules Selection -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Forma Geométrica (Módulo)</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="setModule('diamond')" id="modDiamond" class="module-card selected flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 transition-all">
+              <i class="fa-solid fa-gem text-amber-600 text-lg"></i>
+              <span class="text-[9px] font-bold mt-1">Losango</span>
+            </button>
+            <button onclick="setModule('zig zag')" id="modZigzag" class="module-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 transition-all">
+              <i class="fa-solid fa-wave-square text-amber-600 text-lg"></i>
+              <span class="text-[9px] font-bold mt-1">Zigue-Zague</span>
+            </button>
+            <button onclick="setModule('cross')" id="modCross" class="module-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 transition-all">
+              <i class="fa-solid fa-star-of-life text-amber-600 text-lg"></i>
+              <span class="text-[9px] font-bold mt-1">Estrela</span>
+            </button>
+            <button onclick="setModule('circles')" id="modCircles" class="module-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 transition-all">
+              <i class="fa-solid fa-bullseye text-amber-600 text-lg"></i>
+              <span class="text-[9px] font-bold mt-1">Círculos</span>
+            </button>
+            <button onclick="setModule('solid')" id="modSolid" class="module-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 transition-all">
+              <i class="fa-solid fa-square text-amber-600 text-lg"></i>
+              <span class="text-[9px] font-bold mt-1">Sólido</span>
+            </button>
+            <button onclick="setModule('eraser')" id="modEraser" class="module-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-white text-rose-600 transition-all">
+              <i class="fa-solid fa-eraser text-lg"></i>
+              <span class="text-[9px] font-bold mt-1">Apagar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Color Palette Selection -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Paleta Têxtil PALOP</label>
+          <div class="grid grid-cols-4 gap-2">
+            <button onclick="setColor('#D97706')" id="colOchre" class="color-card selected flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-[#D97706] text-white transition-all">
+              <span class="w-6 h-6 rounded-md bg-[#D97706] shadow-inner border border-slate-400"></span>
+              <span class="text-[9px] font-bold mt-1">Ocre</span>
+            </button>
+            <button onclick="setColor('#DC2626')" id="colRed" class="color-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-[#DC2626] text-white transition-all">
+              <span class="w-6 h-6 rounded-md bg-[#DC2626] shadow-inner border border-slate-400"></span>
+              <span class="text-[9px] font-bold mt-1">Argila</span>
+            </button>
+            <button onclick="setColor('#059669')" id="colGreen" class="color-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-[#059669] text-white transition-all">
+              <span class="w-6 h-6 rounded-md bg-[#059669] shadow-inner border border-slate-400"></span>
+              <span class="text-[9px] font-bold mt-1">Palma</span>
+            </button>
+            <button onclick="setColor('#0B3C5D')" id="colIndigo" class="color-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-[#0B3C5D] text-white transition-all">
+              <span class="w-6 h-6 rounded-md bg-[#0B3C5D] shadow-inner border border-slate-400"></span>
+              <span class="text-[9px] font-bold mt-1">Índigo</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Rotation Control -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Rotação do Módulo (Geometria)</label>
+          <div class="grid grid-cols-4 gap-1">
+            <button onclick="setRotation(0)" id="rot0" class="py-1.5 bg-amber-500 text-white rounded-lg text-xs font-bold">0°</button>
+            <button onclick="setRotation(90)" id="rot90" class="py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold">90°</button>
+            <button onclick="setRotation(180)" id="rot180" class="py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold">180°</button>
+            <button onclick="setRotation(270)" id="rot270" class="py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold">270°</button>
+          </div>
+        </div>
+
+        <!-- Grid Size / Resolution -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Grelha Modular</label>
+          <select id="gridSelect" onchange="changeGridSize(Number(this.value))" class="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-700 outline-none">
+            <option value="6">6 × 6 (Blocos Grandes)</option>
+            <option value="8" selected>8 × 8 (Padrão Equilibrado)</option>
+            <option value="12">12 × 12 (Alta Densidade)</option>
+          </select>
+        </div>
+
+        <!-- Reset Button -->
+        <div class="pt-3 border-t border-slate-100">
+          <button onclick="clearGrid()" class="w-full py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition-all">
+            <i class="fa-solid fa-trash-can mr-1"></i> Limpar Capulana
+          </button>
+        </div>
+      </aside>
+
+      <!-- MAIN CANVAS DISPLAY -->
+      <section class="lg:col-span-6 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-title font-bold text-navy-800 text-lg">O Teu Tecido (Repetição 3×3)</h2>
+            <p class="text-xs text-slate-500">Clica nas células para encaixar os módulos geométricos.</p>
+          </div>
+          <button onclick="exportPNG()" class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold font-title px-4 py-2 rounded-xl shadow transition-all">
+            <i class="fa-solid fa-download"></i> Guardar Tecido (PNG)
+          </button>
+        </div>
+
+        <!-- Canvas Frame -->
+        <div class="cloth-stage relative w-full aspect-square border-4 border-[#8C7A6B] rounded-2xl p-4 shadow-inner flex items-center justify-center overflow-hidden">
+          <canvas id="capulanaCanvas" width="600" height="600" class="w-full h-full block cursor-pointer rounded-md shadow-lg bg-[#FAF7F0] touch-none"></canvas>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-slate-500 font-medium pt-1">
+          <span><i class="fa-solid fa-shirt text-amber-600 mr-1"></i> <span id="placedCount">0</span> módulos aplicados</span>
+          <span id="gridDimLabel">8 × 8 (Bloco Base)</span>
+        </div>
+      </section>
+
+      <!-- EDUCATIONAL & CULTURE PANEL -->
+      <aside class="lg:col-span-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-4">
+        <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+          <h2 class="font-title font-bold text-navy-800 text-lg">Geometria Têxtil</h2>
+          <span class="text-xs bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded">Modular</span>
+        </div>
+
+        <div class="space-y-3 text-xs text-slate-600 leading-relaxed">
+          <div class="p-3 bg-amber-50 rounded-xl border border-amber-100 space-y-1">
+            <strong class="text-navy-800 font-title text-sm flex items-center gap-1.5">
+              <i class="fa-solid fa-shapes text-amber-600"></i> Padrões Repetidos
+            </strong>
+            <p>Na criação de capulanas, um único bloco geométrico repete-se lado a lado (translação) para revestir todo o tecido com harmonia visual.</p>
+          </div>
+
+          <div class="p-3 bg-sky-50 rounded-xl border border-sky-100 space-y-1">
+            <strong class="text-navy-800 font-title text-sm flex items-center gap-1.5">
+              <i class="fa-solid fa-rotate text-sky-600"></i> Rotação e Simetria
+            </strong>
+            <p>Muda o ângulo de rotação (90°, 180°) do mesmo módulo para descobrires novas formas e simetrias surpreendentes!</p>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-navy-900 text-slate-300 py-8 border-t border-navy-800 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <img src="logo_CriaNauta_3.png" alt="CriaNauta" class="h-8 w-auto object-contain brightness-200" onerror="this.src='logo_CriaNauta_2.png'">
+      </div>
+      <p class="text-xs text-slate-400 text-center">CriaNauta · Artefactos pedagógicos para explorar e aprender no 1.º Ciclo do Ensino Básico.</p>
+      <div class="text-xs text-slate-500">
+        <span>© 2026 CriaNauta</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT MODULAR ENGINE -->
+  <script>
+    const canvas = document.getElementById('capulanaCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const BG_COLOR = '#FAF7F0';
+    let gridSize = 8;
+    let selectedModule = 'diamond';
+    let selectedColor = '#D97706';
+    let currentRotation = 0;
+    let grid = [];
+
+    function initGrid(size) {
+      gridSize = size;
+      // Cada célula guarda um objeto: { type, color, rotation }
+      grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(null));
+      document.getElementById('gridDimLabel').innerText = `${gridSize} × ${gridSize} (Bloco Base)`;
+      draw();
+    }
+
+    function setModule(mod) {
+      selectedModule = mod;
+      ['modDiamond', 'modZigzag', 'modCross', 'modCircles', 'modSolid', 'modEraser'].forEach(id => {
+        document.getElementById(id).classList.remove('selected');
+      });
+      if (mod === 'diamond') document.getElementById('modDiamond').classList.add('selected');
+      if (mod === 'zig zag') document.getElementById('modZigzag').classList.add('selected');
+      if (mod === 'cross') document.getElementById('modCross').classList.add('selected');
+      if (mod === 'circles') document.getElementById('modCircles').classList.add('selected');
+      if (mod === 'solid') document.getElementById('modSolid').classList.add('selected');
+      if (mod === 'eraser') document.getElementById('modEraser').classList.add('selected');
+    }
+
+    function setColor(color) {
+      selectedColor = color;
+      document.querySelectorAll('.color-card').forEach(c => c.classList.remove('selected'));
+      if (color === '#D97706') document.getElementById('colOchre').classList.add('selected');
+      if (color === '#DC2626') document.getElementById('colRed').classList.add('selected');
+      if (color === '#059669') document.getElementById('colGreen').classList.add('selected');
+      if (color === '#0B3C5D') document.getElementById('colIndigo').classList.add('selected');
+    }
+
+    function setRotation(deg) {
+      currentRotation = deg;
+      [0, 90, 180, 270].forEach(d => {
+        const btn = document.getElementById(`rot${d}`);
+        if (d === deg) {
+          btn.className = 'py-1.5 bg-amber-500 text-white rounded-lg text-xs font-bold';
+        } else {
+          btn.className = 'py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold';
+        }
+      });
+    }
+
+    function changeGridSize(size) {
+      initGrid(size);
+    }
+
+    function drawModuleShape(type, color, rotation, x, y, size) {
+      ctx.save();
+      ctx.translate(x + size / 2, y + size / 2);
+      ctx.rotate((rotation * Math.PI) / 180);
+      
+      const s2 = size / 2;
+
+      if (type === 'solid') {
+        ctx.fillStyle = color;
+        ctx.fillRect(-s2, -s2, size, size);
+      } else if (type === 'diamond') {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(0, -s2 * 0.85);
+        ctx.lineTo(s2 * 0.85, 0);
+        ctx.lineTo(0, s2 * 0.85);
+        ctx.lineTo(-s2 * 0.85, 0);
+        ctx.closePath();
+        ctx.fill();
+      } else if (type === 'zig zag') {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = Math.max(2, size / 6);
+        ctx.beginPath();
+        ctx.moveTo(-s2, s2 * 0.5);
+        ctx.lineTo(0, -s2 * 0.5);
+        ctx.lineTo(s2, s2 * 0.5);
+        ctx.stroke();
+      } else if (type === 'cross') {
+        ctx.fillStyle = color;
+        const thickness = size * 0.3;
+        ctx.fillRect(-thickness / 2, -s2, thickness, size);
+        ctx.fillRect(-s2, -thickness / 2, size, thickness);
+      } else if (type === 'circles') {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = Math.max(2, size / 8);
+        ctx.beginPath();
+        ctx.arc(0, 0, s2 * 0.6, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(0, 0, s2 * 0.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    function drawSingleTile(offsetX, offsetY, renderSize) {
+      const cellSize = renderSize / gridSize;
+      let count = 0;
+
+      for (let r = 0; r < gridSize; r++) {
+        for (let c = 0; c < gridSize; c++) {
+          const cell = grid[r][c];
+          const posX = offsetX + c * cellSize;
+          const posY = offsetY + r * cellSize;
+
+          // Fundo da célula com textura de tecido subtil
+          ctx.fillStyle = BG_COLOR;
+          ctx.fillRect(posX, posY, cellSize, cellSize);
+
+          // Trama têxtil subtil
+          ctx.strokeStyle = 'rgba(140, 122, 107, 0.12)';
+          ctx.lineWidth = 0.5;
+          ctx.strokeRect(posX, posY, cellSize, cellSize);
+
+          if (cell) {
+            count++;
+            drawModuleShape(cell.type, cell.color, cell.rotation, posX, posY, cellSize);
+          }
+        }
+      }
+
+      // Borda do bloco
+      ctx.strokeStyle = '#8C7A6B';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(offsetX, offsetY, renderSize, renderSize);
+
+      return count;
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = BG_COLOR;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Pré-visualização em grelha 3x3 (Tecido Corrido)
+      const tilesPerSide = 3;
+      const tileSize = canvas.width / tilesPerSide;
+      let totalPlaced = 0;
+
+      for (let tr = 0; tr < tilesPerSide; tr++) {
+        for (let tc = 0; tc < tilesPerSide; tc++) {
+          totalPlaced = drawSingleTile(tc * tileSize, tr * tileSize, tileSize);
+        }
+      }
+
+      // Multiplica o contador pelo número total de repetições no tecido
+      document.getElementById('placedCount').innerText = totalPlaced * (tilesPerSide * tilesPerSide);
+    }
+
+    function getGridCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      
+      let x = (clientX - rect.left) * (canvas.width / rect.width);
+      let y = (clientY - rect.top) * (canvas.height / rect.height);
+
+      const tilesPerSide = 3;
+      const tileSize = canvas.width / tilesPerSide;
+
+      // Mapeia o clique no tecido completo (3x3) de volta para o Bloco Base central (índice 0,0)
+      x = x % tileSize;
+      y = y % tileSize;
+
+      const c = Math.floor(x / (tileSize / gridSize));
+      const r = Math.floor(y / (tileSize / gridSize));
+
+      return { c, r };
+    }
+
+    canvas.addEventListener('click', (e) => {
+      const { c, r } = getGridCoords(e);
+      if (c < 0 || r < 0 || c >= gridSize || r >= gridSize) return;
+
+      if (selectedModule === 'eraser') {
+        grid[r][c] = null;
+      } else {
+        grid[r][c] = {
+          type: selectedModule,
+          color: selectedColor,
+          rotation: currentRotation
+        };
+      }
+      draw();
+    });
+
+    function clearGrid() {
+      initGrid(gridSize);
+    }
+
+    function loadPreset(name) {
+      initGrid(8);
+      const center = 3.5;
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          const dist = Math.sqrt(Math.pow(r - center, 2) + Math.pow(c - center, 2));
+          if (name === 'sol' && dist < 3) {
+            grid[r][c] = { type: 'diamond', color: '#D97706', rotation: 0 };
+          } else if (name === 'geom' && (r === c || r + c === 7)) {
+            grid[r][c] = { type: 'cross', color: '#059669', rotation: 90 };
+          }
+        }
+      }
+      draw();
+    }
+
+    function exportPNG() {
+      const link = document.createElement('a');
+      link.download = `CriaNauta_CapulanaModular_${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    window.onload = function() {
+      initGrid(8);
+    };
+  </script>
+</body>
+</html>

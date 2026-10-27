@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oficina de Tais Timorense — CriaNauta</title>
+  
+  <!-- Google Fonts: Fredoka & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { 800: '#0B253C', 900: '#071828' },
+            teal: { 500: '#0EA5E9' },
+            gold: { 500: '#F59E0B' },
+            timor: { red: '#C02626', black: '#18181B', yellow: '#EAB308' },
+            paper: '#FDFBF7'
+          },
+          fontFamily: {
+            title: ['Fredoka', 'sans-serif'],
+            body: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #FDFBF7; color: #0B253C; }
+    h1, h2, h3, h4, .font-title { font-family: 'Fredoka', sans-serif; }
+    .loom-stage {
+      background-color: #3A2E2B;
+      background-image: repeating-linear-gradient(0deg, #2B211E, #2B211E 2px, #3A2E2B 2px, #3A2E2B 8px);
+    }
+    .color-card.selected { border-color: #EAB308; box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.4); }
+    .symbol-card.selected { border-color: #C02626; background-color: #FEF2F2; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-red-600 selection:text-white">
+
+  <!-- CABEÇALHO / NAVEGAÇÃO -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <img src="logo_CriaNauta_3.png" alt="Logótipo CriaNauta" class="h-12 w-auto object-contain transition-transform group-hover:scale-105" onerror="this.src='logo_CriaNauta_2.png'">
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-title px-4 py-2 rounded-full text-sm transition-all border border-slate-200">
+          <i class="fa-solid fa-arrow-left text-xs"></i>
+          <span>Voltar ao Início</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col gap-6">
+
+    <!-- HERO INTRO -->
+    <section class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+      <div>
+        <span class="inline-block px-2.5 py-0.5 bg-red-500/10 text-red-600 text-xs font-bold rounded mb-1">ARTEFACTO PATRIMONIAL & TEAR ANIMADO</span>
+        <h1 class="text-2xl sm:text-3xl font-bold text-navy-800">Oficina de Tais Timorense</h1>
+        <p class="text-slate-600 text-sm">Explora a tecelagem viva de Timor-Leste com fios animados, ritmos cromáticos e símbolos sagrados em movimento suave.</p>
+      </div>
+
+      <!-- Presets -->
+      <div class="flex items-center gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200 flex-wrap">
+        <span class="text-xs font-bold text-navy-800 px-2 font-title">Tradições:</span>
+        <button onclick="loadPreset('lafaek')" class="px-2.5 py-1.5 bg-white hover:bg-red-50 text-slate-700 hover:text-red-600 border border-slate-200 rounded-lg text-xs font-semibold transition-all">🐊 Lafaek (Crocodilo)</button>
+        <button onclick="loadPreset('lautem')" class="px-2.5 py-1.5 bg-white hover:bg-red-50 text-slate-700 hover:text-red-600 border border-slate-200 rounded-lg text-xs font-semibold transition-all">☀️ Tais de Lautém</button>
+      </div>
+    </section>
+
+    <!-- WORKSPACE -->
+    <div class="grid lg:grid-cols-12 gap-6 items-start">
+
+      <!-- CONTROLS PANEL -->
+      <aside class="lg:col-span-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-5">
+        <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+          <h2 class="font-title font-bold text-navy-800 text-lg">Tear & Urdidura</h2>
+          <span class="text-xs bg-red-100 text-red-800 font-semibold px-2 py-0.5 rounded">Tecelão</span>
+        </div>
+
+        <!-- ANIMATION TOGGLE -->
+        <div class="flex items-center justify-between bg-amber-50 p-3 rounded-xl border border-amber-200">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-wand-magic-sparkles text-amber-600 text-sm"></i>
+            <span class="text-xs font-bold text-navy-800 font-title">Efeito de Brisa Viva</span>
+          </div>
+          <button onclick="toggleAnimation()" id="animToggleBtn" class="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold shadow-sm transition-all">
+            Ligado
+          </button>
+        </div>
+
+        <!-- UNDO / REDO -->
+        <div class="flex items-center justify-between gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200">
+          <button onclick="undo()" id="undoBtn" class="flex-1 py-1.5 px-2 bg-white hover:bg-slate-100 disabled:opacity-40 text-slate-700 rounded-lg text-xs font-bold border border-slate-200 flex items-center justify-center gap-1.5 transition-all">
+            <i class="fa-solid fa-rotate-left"></i> Desfazer
+          </button>
+          <button onclick="redo()" id="redoBtn" class="flex-1 py-1.5 px-2 bg-white hover:bg-slate-100 disabled:opacity-40 text-slate-700 rounded-lg text-xs font-bold border border-slate-200 flex items-center justify-center gap-1.5 transition-all">
+            <i class="fa-solid fa-rotate-right"></i> Refazer
+          </button>
+        </div>
+
+        <!-- YARN COLORS -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Fios de Algodão (Pigmentos)</label>
+          <div class="grid grid-cols-4 gap-2">
+            <button onclick="setColor('#C02626')" id="colRed" class="color-card selected flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-[#C02626] text-white transition-all">
+              <span class="w-6 h-6 rounded-md bg-[#C02626] shadow-inner border border-slate-400"></span>
+              <span class="text-[9px] font-bold mt-1">Hibisco</span>
+            </button>
+            <button onclick="setColor('#18181B')" id="colBlack" class="color-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-[#18181B] text-white transition-all">
+              <span class="w-6 h-6 rounded-md bg-[#18181B] shadow-inner border border-slate-400"></span>
+              <span class="text-[9px] font-bold mt-1">Carvão</span>
+            </button>
+            <button onclick="setColor('#EAB308')" id="colYellow" class="color-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-[#EAB308] text-white transition-all">
+              <span class="w-6 h-6 rounded-md bg-[#EAB308] shadow-inner border border-slate-400"></span>
+              <span class="text-[9px] font-bold mt-1">Cúrcuma</span>
+            </button>
+            <button onclick="setColor('#FAF7F0')" id="colWhite" class="color-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-[#FAF7F0] text-slate-800 transition-all">
+              <span class="w-6 h-6 rounded-md bg-[#FAF7F0] shadow-inner border border-slate-300"></span>
+              <span class="text-[9px] font-bold mt-1">Algodão</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- MOTIFS / FUTUS -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Símbolo Ancestral (*Futu*)</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="setSymbol('lafaek')" id="symLafaek" class="symbol-card selected flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 transition-all">
+              <i class="fa-solid fa-dragon text-red-600 text-lg"></i>
+              <span class="text-[9px] font-bold mt-1">Crocodilo</span>
+            </button>
+            <button onclick="setSymbol('star')" id="symStar" class="symbol-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 transition-all">
+              <i class="fa-solid fa-star text-red-600 text-lg"></i>
+              <span class="text-[9px] font-bold mt-1">Estrela</span>
+            </button>
+            <button onclick="setSymbol('diamond')" id="symDiamond" class="symbol-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 transition-all">
+              <i class="fa-solid fa-gem text-red-600 text-lg"></i>
+              <span class="text-[9px] font-bold mt-1">Losango</span>
+            </button>
+            <button onclick="setSymbol('stripe')" id="symStripe" class="symbol-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 transition-all">
+              <i class="fa-solid fa-grip-lines-vertical text-red-600 text-lg"></i>
+              <span class="text-[9px] font-bold mt-1">Linha Fio</span>
+            </button>
+            <button onclick="setSymbol('clear')" id="symClear" class="symbol-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-white text-rose-600 transition-all">
+              <i class="fa-solid fa-eraser text-lg"></i>
+              <span class="text-[9px] font-bold mt-1">Remover</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- WARP DENSITY -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Número de Fios (Urdidura)</label>
+          <select id="warpSelect" onchange="changeWarpSize(Number(this.value))" class="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-700 outline-none">
+            <option value="16">16 Fios (Faixa Larga)</option>
+            <option value="24" selected>24 Fios (Tais Clássico)</option>
+            <option value="32">32 Fios (Mestre Teardil)</option>
+          </select>
+        </div>
+
+        <!-- Reset Button -->
+        <div class="pt-3 border-t border-slate-100">
+          <button onclick="clearLoom()" class="w-full py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition-all">
+            <i class="fa-solid fa-trash-can mr-1"></i> Desarmar Tear
+          </button>
+        </div>
+      </aside>
+
+      <!-- MAIN LOOM DISPLAY -->
+      <section class="lg:col-span-6 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-title font-bold text-navy-800 text-lg">Pano de Tais em Pente</h2>
+            <p class="text-xs text-slate-500">Clica nos fios verticais para tecer cores e aplicar símbolos.</p>
+          </div>
+          <button onclick="exportPNG()" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold font-title px-4 py-2 rounded-xl shadow transition-all">
+            <i class="fa-solid fa-download"></i> Guardar Tais (PNG)
+          </button>
+        </div>
+
+        <!-- Loom Frame Stage -->
+        <div class="loom-stage relative w-full aspect-[4/5] border-8 border-[#5A433B] rounded-2xl p-6 shadow-2xl flex items-center justify-center overflow-hidden">
+          <canvas id="taisCanvas" width="500" height="625" class="w-full h-full block cursor-pointer rounded-sm shadow-inner bg-[#FAF7F0] touch-none"></canvas>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-slate-500 font-medium pt-1">
+          <span><i class="fa-solid fa-scroll text-red-600 mr-1"></i> <span id="threadsCount">24</span> fios tecidos</span>
+          <span id="warpLabel">24 Fios de Algodão</span>
+        </div>
+      </section>
+
+      <!-- EDUCATIONAL & CULTURE PANEL -->
+      <aside class="lg:col-span-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-4">
+        <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+          <h2 class="font-title font-bold text-navy-800 text-lg">Património Sagrado</h2>
+          <span class="text-xs bg-red-100 text-red-800 font-semibold px-2 py-0.5 rounded">UNESCO</span>
+        </div>
+
+        <div class="space-y-3 text-xs text-slate-600 leading-relaxed">
+          <div class="p-3 bg-red-50 rounded-xl border border-red-100 space-y-1">
+            <strong class="text-navy-800 font-title text-sm flex items-center gap-1.5">
+              <i class="fa-solid fa-dragon text-red-600"></i> O Lafaek Ancestral
+            </strong>
+            <p>O crocodilo (*Lafaek*) é o símbolo sagrado de Timor-Leste. Segundo a lenda, a ilha de Timor nasceu do corpo de um grande crocodilo amigo.</p>
+          </div>
+
+          <div class="p-3 bg-amber-50 rounded-xl border border-amber-100 space-y-1">
+            <strong class="text-navy-800 font-title text-sm flex items-center gap-1.5">
+              <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> Tear Vivo
+            </strong>
+            <p>A animação suave simula o movimento orgânico dos fios de algodão natural ao vento nas montanhas de Timor.</p>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-navy-900 text-slate-300 py-8 border-t border-navy-800 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <img src="logo_CriaNauta_3.png" alt="CriaNauta" class="h-8 w-auto object-contain brightness-200" onerror="this.src='logo_CriaNauta_2.png'">
+      </div>
+      <p class="text-xs text-slate-400 text-center">CriaNauta · Artefactos pedagógicos para explorar e aprender no 1.º Ciclo do Ensino Básico.</p>
+      <div class="text-xs text-slate-500">
+        <span>© 2026 CriaNauta</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT TAIS ANIMATED ENGINE -->
+  <script>
+    const canvas = document.getElementById('taisCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let warpThreads = 24;
+    let selectedColor = '#C02626';
+    let selectedSymbol = 'lafaek';
+    let isAnimated = true;
+    let animTime = 0;
+    
+    let loomState = [];
+    let undoStack = [];
+    let redoStack = [];
+
+    function saveState() {
+      undoStack.push(JSON.stringify(loomState));
+      redoStack = [];
+      updateUndoRedoUI();
+    }
+
+    function undo() {
+      if (undoStack.length === 0) return;
+      redoStack.push(JSON.stringify(loomState));
+      loomState = JSON.parse(undoStack.pop());
+      updateUndoRedoUI();
+    }
+
+    function redo() {
+      if (redoStack.length === 0) return;
+      undoStack.push(JSON.stringify(loomState));
+      loomState = JSON.parse(redoStack.pop());
+      updateUndoRedoUI();
+    }
+
+    function updateUndoRedoUI() {
+      document.getElementById('undoBtn').disabled = undoStack.length === 0;
+      document.getElementById('redoBtn').disabled = redoStack.length === 0;
+    }
+
+    function toggleAnimation() {
+      isAnimated = !isAnimated;
+      const btn = document.getElementById('animToggleBtn');
+      if (isAnimated) {
+        btn.innerText = 'Ligado';
+        btn.className = 'px-3 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold shadow-sm transition-all';
+      } else {
+        btn.innerText = 'Desligado';
+        btn.className = 'px-3 py-1 bg-slate-300 hover:bg-slate-400 text-slate-700 rounded-lg text-xs font-bold shadow-sm transition-all';
+      }
+    }
+
+    function initLoom(threads) {
+      warpThreads = threads;
+      loomState = Array.from({ length: warpThreads }, (_, i) => ({
+        color: i % 2 === 0 ? '#C02626' : '#18181B',
+        symbol: i % 4 === 0 ? 'lafaek' : 'stripe'
+      }));
+      undoStack = [];
+      redoStack = [];
+      updateUndoRedoUI();
+      document.getElementById('warpLabel').innerText = `${warpThreads} Fios de Algodão`;
+      document.getElementById('threadsCount').innerText = warpThreads;
+    }
+
+    function setColor(color) {
+      selectedColor = color;
+      document.querySelectorAll('.color-card').forEach(c => c.classList.remove('selected'));
+      if (color === '#C02626') document.getElementById('colRed').classList.add('selected');
+      if (color === '#18181B') document.getElementById('colBlack').classList.add('selected');
+      if (color === '#EAB308') document.getElementById('colYellow').classList.add('selected');
+      if (color === '#FAF7F0') document.getElementById('colWhite').classList.add('selected');
+    }
+
+    function setSymbol(sym) {
+      selectedSymbol = sym;
+      document.querySelectorAll('.symbol-card').forEach(s => s.classList.remove('selected'));
+      if (sym === 'lafaek') document.getElementById('symLafaek').classList.add('selected');
+      if (sym === 'star') document.getElementById('symStar').classList.add('selected');
+      if (sym === 'diamond') document.getElementById('symDiamond').classList.add('selected');
+      if (sym === 'stripe') document.getElementById('symStripe').classList.add('selected');
+      if (sym === 'clear') document.getElementById('symClear').classList.add('selected');
+    }
+
+    function changeWarpSize(threads) {
+      initLoom(threads);
+    }
+
+    // ANIMATED RENDER LOOP
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#FAF7F0';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const threadWidth = canvas.width / warpThreads;
+
+      // Desenha Fios com Ondulação Suave se a animação estiver ativa
+      for (let i = 0; i < warpThreads; i++) {
+        const item = loomState[i];
+        const x = i * threadWidth;
+
+        ctx.fillStyle = item.color;
+        
+        if (isAnimated) {
+          // Efeito de ondulação orgânica do tecido ao vento
+          const wave = Math.sin(animTime + i * 0.4) * 1.5;
+          ctx.fillRect(x + wave, 0, threadWidth + 0.5, canvas.height);
+        } else {
+          ctx.fillRect(x, 0, threadWidth + 0.5, canvas.height);
+        }
+
+        // Textura do Fio
+        ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+
+        // Desenha Símbolo com Pulsação Suave
+        if (item.symbol && item.symbol !== 'clear' && item.symbol !== 'stripe') {
+          drawFutuSymbol(item.symbol, x, threadWidth);
+        }
+      }
+
+      // Trama Transversal
+      ctx.strokeStyle = 'rgba(40, 30, 20, 0.08)';
+      ctx.lineWidth = 1;
+      for (let y = 0; y < canvas.height; y += 4) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+
+      drawFringes();
+
+      if (isAnimated) {
+        animTime += 0.04; // Velocidade da onda suave
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    function drawFutuSymbol(symbol, x, threadWidth) {
+      const centerY = canvas.height / 2;
+      let size = threadWidth * 1.8;
+
+      // Pulsação suave do símbolo se animado
+      if (isAnimated) {
+        size += Math.sin(animTime * 2 + x) * 1.5;
+      }
+
+      ctx.save();
+      ctx.translate(x + threadWidth / 2, centerY);
+
+      ctx.fillStyle = '#FAF7F0';
+      ctx.strokeStyle = '#EAB308';
+      ctx.lineWidth = 2;
+
+      if (symbol === 'lafaek') {
+        ctx.beginPath();
+        ctx.ellipse(0, 0, size / 3, size, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      } else if (symbol === 'star') {
+        ctx.beginPath();
+        for (let i = 0; i < 5; i++) {
+          ctx.lineTo(Math.cos((18 + i * 72) * Math.PI / 180) * size / 2, -Math.sin((18 + i * 72) * Math.PI / 180) * size / 2);
+          ctx.lineTo(Math.cos((54 + i * 72) * Math.PI / 180) * size / 4, -Math.sin((54 + i * 72) * Math.PI / 180) * size / 4);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      } else if (symbol === 'diamond') {
+        ctx.beginPath();
+        ctx.moveTo(0, -size / 2);
+        ctx.lineTo(size / 2, 0);
+        ctx.lineTo(0, size / 2);
+        ctx.lineTo(-size / 2, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    function drawFringes() {
+      const threadWidth = canvas.width / warpThreads;
+      ctx.fillStyle = '#EAB308';
+      for (let i = 0; i < warpThreads; i++) {
+        const x = i * threadWidth;
+        ctx.fillRect(x + threadWidth / 4, 0, 2, 15);
+        ctx.fillRect(x + threadWidth / 4, canvas.height - 15, 2, 15);
+      }
+    }
+
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
+      const threadWidth = canvas.width / warpThreads;
+      const threadIndex = Math.floor(clickX / threadWidth);
+
+      if (threadIndex >= 0 && threadIndex < warpThreads) {
+        saveState();
+        loomState[threadIndex] = {
+          color: selectedColor,
+          symbol: selectedSymbol
+        };
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      }
+      if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') || ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'z')) {
+        e.preventDefault();
+        redo();
+      }
+    });
+
+    function clearLoom() {
+      saveState();
+      initLoom(warpThreads);
+    }
+
+    function loadPreset(name) {
+      saveState();
+      initLoom(24);
+      for (let i = 0; i < 24; i++) {
+        if (name === 'lafaek') {
+          loomState[i] = {
+            color: (i >= 8 && i <= 15) ? '#18181B' : '#C02626',
+            symbol: (i === 11 || i === 12) ? 'lafaek' : 'stripe'
+          };
+        } else if (name === 'lautem') {
+          loomState[i] = {
+            color: i % 3 === 0 ? '#EAB308' : (i % 2 === 0 ? '#C02626' : '#18181B'),
+            symbol: i % 6 === 0 ? 'star' : 'diamond'
+          };
+        }
+      }
+    }
+
+    function exportPNG() {
+      // Congela momentaneamente a animação para garantir uma captura limpa
+      const wasAnimated = isAnimated;
+      isAnimated = false;
+      draw();
+
+      const link = document.createElement('a');
+      link.download = `CriaNauta_TaisTimor_${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+
+      isAnimated = wasAnimated;
+    }
+
+    window.onload = function() {
+      initLoom(24);
+      requestAnimationFrame(draw);
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oficina de Cordel & Xilogravura — CriaNauta</title>
+  
+  <!-- Google Fonts: Fredoka & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { 800: '#0B253C', 900: '#071828' },
+            wood: { 800: '#271C12', 900: '#18110A' },
+            paper: '#F4EAD2'
+          },
+          fontFamily: {
+            title: ['Fredoka', 'sans-serif'],
+            body: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #FDFBF7; color: #0B253C; }
+    h1, h2, h3, h4, .font-title { font-family: 'Fredoka', sans-serif; }
+    .woodcut-stage {
+      background-color: #F4EAD2;
+      background-image: radial-gradient(#D5C5A5 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+    .tool-btn.selected, .stamp-btn.selected { border-color: #18110A; background-color: #E8D8B8; box-shadow: 0 0 0 2px rgba(24, 17, 10, 0.3); }
+    .mode-btn.selected { background-color: #18110A; color: #F4EAD2; font-weight: bold; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-stone-800 selection:text-white">
+
+  <!-- CABEÇALHO / NAVEGAÇÃO -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <img src="logo_CriaNauta_3.png" alt="Logótipo CriaNauta" class="h-12 w-auto object-contain transition-transform group-hover:scale-105" onerror="this.src='logo_CriaNauta_2.png'">
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-title px-4 py-2 rounded-full text-sm transition-all border border-slate-200">
+          <i class="fa-solid fa-arrow-left text-xs"></i>
+          <span>Voltar ao Início</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col gap-6">
+
+    <!-- HERO INTRO -->
+    <section class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+      <div>
+        <span class="inline-block px-2.5 py-0.5 bg-stone-800/10 text-stone-700 text-xs font-bold rounded mb-1">ARTEFACTO GRÁFICO & LITERATURA DE CORDEL</span>
+        <h1 class="text-2xl sm:text-3xl font-bold text-navy-800">Oficina de Xilogravura</h1>
+        <p class="text-slate-600 text-sm">Cria capas de cordel com carimbos, texto tipográfico com tamanho ajustável e modo negativo.</p>
+      </div>
+
+      <!-- Presets -->
+      <div class="flex items-center gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200 flex-wrap">
+        <span class="text-xs font-bold text-navy-800 px-2 font-title">Inspirações:</span>
+        <button onclick="loadPreset('festa')" class="px-2.5 py-1.5 bg-white hover:bg-amber-50 text-slate-700 hover:text-stone-800 border border-slate-200 rounded-lg text-xs font-semibold transition-all">🎈 Festa Junina</button>
+        <button onclick="loadPreset('sertao')" class="px-2.5 py-1.5 bg-white hover:bg-amber-50 text-slate-700 hover:text-stone-800 border border-slate-200 rounded-lg text-xs font-semibold transition-all">🌵 Vida no Sertão</button>
+      </div>
+    </section>
+
+    <!-- WORKSPACE -->
+    <div class="grid lg:grid-cols-12 gap-6 items-start">
+
+      <!-- TOOLS PANEL -->
+      <aside class="lg:col-span-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-5">
+        <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+          <h2 class="font-title font-bold text-navy-800 text-lg">Ferramentas de Impressão</h2>
+          <span class="text-xs bg-stone-100 text-stone-800 font-semibold px-2 py-0.5 rounded">Gravador</span>
+        </div>
+
+        <!-- UNDO / REDO -->
+        <div class="flex items-center justify-between gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200">
+          <button onclick="undo()" id="undoBtn" class="flex-1 py-1.5 px-2 bg-white hover:bg-slate-100 disabled:opacity-40 text-slate-700 rounded-lg text-xs font-bold border border-slate-200 flex items-center justify-center gap-1.5 transition-all">
+            <i class="fa-solid fa-rotate-left"></i> Desfazer
+          </button>
+          <button onclick="redo()" id="redoBtn" class="flex-1 py-1.5 px-2 bg-white hover:bg-slate-100 disabled:opacity-40 text-slate-700 rounded-lg text-xs font-bold border border-slate-200 flex items-center justify-center gap-1.5 transition-all">
+            <i class="fa-solid fa-rotate-right"></i> Refazer
+          </button>
+        </div>
+
+        <!-- DRAWING TOOLS -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Modo de Ação</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="setTool('ink')" id="toolInk" class="tool-btn selected flex flex-col items-center p-2 rounded-xl border-2 border-stone-800 bg-[#E8D8B8] text-stone-900 font-medium text-[11px] gap-1 transition-all">
+              <i class="fa-solid fa-paintbrush"></i><span>Tinta</span>
+            </button>
+            <button onclick="setTool('gouge')" id="toolGouge" class="tool-btn flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-medium text-[11px] gap-1 transition-all">
+              <i class="fa-solid fa-pen-nib"></i><span>Goiva</span>
+            </button>
+            <button onclick="setTool('text')" id="toolText" class="tool-btn flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-medium text-[11px] gap-1 transition-all">
+              <i class="fa-solid fa-font"></i><span>Texto</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- TEXT CONTROLS (CONDITIONAL) -->
+        <div id="textControls" class="hidden space-y-3 p-3 bg-amber-50 rounded-xl border border-amber-200">
+          <div class="space-y-1">
+            <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Escrever Verso/Título</label>
+            <input type="text" id="cordelTextInput" placeholder="Ex: A FESTA DO SERTÃO" class="w-full text-xs font-semibold bg-white border border-slate-300 rounded-lg p-2 text-stone-900 outline-none focus:border-stone-800">
+          </div>
+
+          <!-- Cor do Texto (Preto / Negativo) -->
+          <div class="space-y-1">
+            <label class="text-[11px] font-bold text-navy-800 uppercase">Cor do Texto</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="setTextMode('ink')" id="modeTextInkBtn" class="mode-btn selected py-1 px-2 bg-white text-stone-900 border border-slate-300 rounded-lg text-xs transition-all">Preto</button>
+              <button onclick="setTextMode('paper')" id="modeTextPaperBtn" class="mode-btn py-1 px-2 bg-white text-stone-900 border border-slate-300 rounded-lg text-xs transition-all">Negativo</button>
+            </div>
+          </div>
+
+          <!-- Tamanho do Texto -->
+          <div class="space-y-1">
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold text-navy-800">Tamanho do Texto</span>
+              <span id="textSizeVal" class="font-mono font-bold text-stone-800">22px</span>
+            </div>
+            <input type="range" id="textSizeRange" min="12" max="48" value="22" oninput="updateTextSize(this.value)" class="w-full accent-stone-800 cursor-pointer">
+          </div>
+        </div>
+
+        <!-- BRUSH SIZE -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Espessura do Traço</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="setSize(8)" id="size8" class="py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold">Fino (8px)</button>
+            <button onclick="setSize(16)" id="size16" class="py-1.5 bg-stone-800 text-white rounded-lg text-xs font-bold">Médio (16px)</button>
+            <button onclick="setSize(28)" id="size28" class="py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold">Largo (28px)</button>
+          </div>
+        </div>
+
+        <!-- STAMPS CATALOG -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Carimbos Tradicionais</label>
+          <div class="grid grid-cols-4 gap-2">
+            <button onclick="setStamp('sun')" id="stampSun" class="stamp-btn p-2 bg-slate-50 hover:bg-stone-100 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Sol">☀️</button>
+            <button onclick="setStamp('star')" id="stampStar" class="stamp-btn p-2 bg-slate-50 hover:bg-stone-100 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Estrela">⭐</button>
+            <button onclick="setStamp('moon')" id="stampMoon" class="stamp-btn p-2 bg-slate-50 hover:bg-stone-100 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Lua">🌙</button>
+            <button onclick="setStamp('bird')" id="stampBird" class="stamp-btn p-2 bg-slate-50 hover:bg-stone-100 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Pássaro">🦅</button>
+            <button onclick="setStamp('cactus')" id="stampCactus" class="stamp-btn p-2 bg-slate-50 hover:bg-stone-100 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Cacto">🌵</button>
+            <button onclick="setStamp('accordion')" id="stampAccordion" class="stamp-btn p-2 bg-slate-50 hover:bg-stone-100 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Acordeão">🪗</button>
+            <button onclick="setStamp('heart')" id="stampHeart" class="stamp-btn p-2 bg-slate-50 hover:bg-stone-100 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Coração">💖</button>
+            <button onclick="setStamp('flower')" id="stampFlower" class="stamp-btn p-2 bg-slate-50 hover:bg-stone-100 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Flor">🌻</button>
+            <button onclick="setStamp('cloud')" id="stampCloud" class="stamp-btn p-2 bg-slate-50 hover:bg-stone-100 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Nuvem">☁️</button>
+            <button onclick="setStamp('fire')" id="stampFire" class="stamp-btn p-2 bg-slate-50 hover:bg-stone-100 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Fogueira">🔥</button>
+            <button onclick="setStamp('flag')" id="stampFlag" class="stamp-btn p-2 bg-slate-50 hover:bg-stone-100 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Bandeirinha">🚩</button>
+            <button onclick="setStamp('house')" id="stampHouse" class="stamp-btn p-2 bg-slate-50 hover:bg-stone-100 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Casa">🏠</button>
+            <button onclick="setStamp('guitar')" id="stampGuitar" class="stamp-btn p-2 bg-slate-50 hover:bg-stone-100 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Violão">🎸</button>
+            <button onclick="setStamp('balloon')" id="stampBalloon" class="stamp-btn p-2 bg-slate-50 hover:bg-stone-100 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Balão">🎈</button>
+          </div>
+        </div>
+
+        <!-- STAMP COLOR MODE (POSITIVO / NEGATIVO) -->
+        <div id="stampColorModeContainer" class="hidden space-y-1.5 bg-amber-50 p-3 rounded-xl border border-amber-200">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Cor do Carimbo</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="setStampMode('ink')" id="modeInkBtn" class="mode-btn selected py-1.5 px-2 bg-white text-stone-900 border border-slate-300 rounded-lg text-xs transition-all">Preto (Tinta)</button>
+            <button onclick="setStampMode('paper')" id="modePaperBtn" class="mode-btn py-1.5 px-2 bg-white text-stone-900 border border-slate-300 rounded-lg text-xs transition-all">Negativo (Papel)</button>
+          </div>
+        </div>
+
+        <!-- STAMP SIZE SLIDER -->
+        <div id="stampSizeContainer" class="space-y-1.5 hidden bg-slate-50 p-3 rounded-xl border border-slate-200">
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-bold text-navy-800">Tamanho do Carimbo</span>
+            <span id="stampSizeVal" class="font-mono font-bold text-stone-800">50px</span>
+          </div>
+          <input type="range" id="stampSizeRange" min="20" max="120" value="50" oninput="updateStampSize(this.value)" class="w-full accent-stone-800 cursor-pointer">
+        </div>
+
+        <!-- RESET -->
+        <div class="pt-3 border-t border-slate-100">
+          <button onclick="clearWoodcut()" class="w-full py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition-all">
+            <i class="fa-solid fa-trash-can mr-1"></i> Limpar Bloco de Madeira
+          </button>
+        </div>
+      </aside>
+
+      <!-- MAIN CANVAS DISPLAY -->
+      <section class="lg:col-span-6 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-title font-bold text-navy-800 text-lg">Capa do Folheto de Cordel</h2>
+            <p id="modeHint" class="text-xs text-stone-600 font-medium">Modo atual: Desenhar com Tinta Preta.</p>
+          </div>
+          <button onclick="exportPNG()" class="inline-flex items-center gap-2 bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold font-title px-4 py-2 rounded-xl shadow transition-all">
+            <i class="fa-solid fa-download"></i> Guardar Capa (PNG)
+          </button>
+        </div>
+
+        <!-- Canvas Frame -->
+        <div class="woodcut-stage relative w-full aspect-[3/4] border-8 border-[#3A2B1E] rounded-2xl p-6 shadow-2xl flex items-center justify-center overflow-hidden">
+          <canvas id="cordelCanvas" width="450" height="600" class="w-full h-full block cursor-crosshair rounded-sm shadow-inner bg-[#F4EAD2] touch-none"></canvas>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-slate-500 font-medium pt-1">
+          <span><i class="fa-solid fa-feather text-stone-800 mr-1"></i> Ativação por Atalhos (Ctrl+Z, T, I, G)</span>
+          <span>Formato Livreto de Cordel</span>
+        </div>
+      </section>
+
+      <!-- EDUCATIONAL & CULTURE PANEL -->
+      <aside class="lg:col-span-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-4">
+        <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+          <h2 class="font-title font-bold text-navy-800 text-lg">Atalhos & Dicas</h2>
+          <span class="text-xs bg-stone-100 text-stone-800 font-semibold px-2 py-0.5 rounded">Teclado</span>
+        </div>
+
+        <div class="space-y-3 text-xs text-slate-600 leading-relaxed">
+          <div class="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-1">
+            <strong class="text-navy-800 font-title text-sm flex items-center gap-1.5">
+              <i class="fa-solid fa-keyboard text-stone-800"></i> Atalhos Rápidos
+            </strong>
+            <ul class="space-y-1 text-[11px] pt-1">
+              <li><kbd class="bg-white px-1 py-0.5 border border-slate-200 rounded font-mono">Ctrl+Z</kbd> Desfazer</li>
+              <li><kbd class="bg-white px-1 py-0.5 border border-slate-200 rounded font-mono">Ctrl+Y</kbd> Refazer</li>
+              <li><kbd class="bg-white px-1 py-0.5 border border-slate-200 rounded font-mono">I</kbd> Tinta Preta</li>
+              <li><kbd class="bg-white px-1 py-0.5 border border-slate-200 rounded font-mono">G</kbd> Goiva</li>
+              <li><kbd class="bg-white px-1 py-0.5 border border-slate-200 rounded font-mono">T</kbd> Texto</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-navy-900 text-slate-300 py-8 border-t border-navy-800 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <img src="logo_CriaNauta_3.png" alt="CriaNauta" class="h-8 w-auto object-contain brightness-200" onerror="this.src='logo_CriaNauta_2.png'">
+      </div>
+      <p class="text-xs text-slate-400 text-center">CriaNauta · Artefactos pedagógicos para explorar e aprender no 1.º Ciclo do Ensino Básico.</p>
+      <div class="text-xs text-slate-500">
+        <span>© 2026 CriaNauta</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT CORDEL ENGINE -->
+  <script>
+    const canvas = document.getElementById('cordelCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const PAPER_COLOR = '#F4EAD2';
+    const INK_COLOR = '#18110A';
+
+    let currentTool = 'ink'; // 'ink', 'gouge', 'text', or stamp name
+    let stampColorMode = 'ink'; // 'ink' or 'paper'
+    let textMode = 'ink'; // 'ink' or 'paper' for text
+    let brushSize = 16;
+    let stampSize = 50;
+    let textSize = 22;
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    let undoStack = [];
+    let redoStack = [];
+
+    function saveState() {
+      undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      redoStack = [];
+      updateUndoRedoUI();
+    }
+
+    function undo() {
+      if (undoStack.length === 0) return;
+      redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      const prev = undoStack.pop();
+      ctx.putImageData(prev, 0, 0);
+      updateUndoRedoUI();
+    }
+
+    function redo() {
+      if (redoStack.length === 0) return;
+      undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      const next = redoStack.pop();
+      ctx.putImageData(next, 0, 0);
+      updateUndoRedoUI();
+    }
+
+    function updateUndoRedoUI() {
+      document.getElementById('undoBtn').disabled = undoStack.length === 0;
+      document.getElementById('redoBtn').disabled = redoStack.length === 0;
+    }
+
+    function initCanvas() {
+      ctx.fillStyle = PAPER_COLOR;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      drawBorderFrame();
+      saveState();
+    }
+
+    function drawBorderFrame() {
+      ctx.strokeStyle = INK_COLOR;
+      ctx.lineWidth = 4;
+      ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
+
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(22, 22, canvas.width - 44, canvas.height - 44);
+
+      ctx.fillStyle = INK_COLOR;
+      ctx.font = 'bold 16px Fredoka, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('LITERATURA DE CORDEL', canvas.width / 2, 50);
+
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(50, 65);
+      ctx.lineTo(canvas.width - 50, 65);
+      ctx.stroke();
+    }
+
+    function clearAllSelections() {
+      ['toolInk', 'toolGouge', 'toolText'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('selected');
+      });
+      document.querySelectorAll('.stamp-btn').forEach(btn => btn.classList.remove('selected'));
+      document.getElementById('textControls').classList.add('hidden');
+      document.getElementById('stampSizeContainer').classList.add('hidden');
+      document.getElementById('stampColorModeContainer').classList.add('hidden');
+    }
+
+    function setTool(tool) {
+      clearAllSelections();
+      currentTool = tool;
+      if (tool === 'ink') {
+        document.getElementById('toolInk').classList.add('selected');
+        document.getElementById('modeHint').innerText = 'Modo atual: Desenhar com Tinta Preta.';
+      } else if (tool === 'gouge') {
+        document.getElementById('toolGouge').classList.add('selected');
+        document.getElementById('modeHint').innerText = 'Modo atual: Goiva (Escavar o papel).';
+      } else if (tool === 'text') {
+        document.getElementById('toolText').classList.add('selected');
+        document.getElementById('textControls').classList.remove('hidden');
+        document.getElementById('modeHint').innerText = 'Modo atual: Inserir Texto Tipográfico.';
+      }
+    }
+
+    function setStamp(stampName) {
+      clearAllSelections();
+      currentTool = stampName;
+      document.getElementById('stampSizeContainer').classList.remove('hidden');
+      document.getElementById('stampColorModeContainer').classList.remove('hidden');
+      
+      const btnMap = {
+        'sun': 'stampSun', 'star': 'stampStar', 'moon': 'stampMoon', 'bird': 'stampBird',
+        'cactus': 'stampCactus', 'accordion': 'stampAccordion', 'heart': 'stampHeart', 'flower': 'stampFlower',
+        'cloud': 'stampCloud', 'fire': 'stampFire', 'flag': 'stampFlag', 'house': 'stampHouse',
+        'guitar': 'stampGuitar', 'balloon': 'stampBalloon'
+      };
+      if (btnMap[stampName]) {
+        document.getElementById(btnMap[stampName]).classList.add('selected');
+      }
+      document.getElementById('modeHint').innerText = `Modo atual: Carimbo (${stampName.toUpperCase()}) - Clica na tela.`;
+    }
+
+    function setStampMode(mode) {
+      stampColorMode = mode;
+      if (mode === 'ink') {
+        document.getElementById('modeInkBtn').classList.add('selected');
+        document.getElementById('modePaperBtn').classList.remove('selected');
+      } else {
+        document.getElementById('modePaperBtn').classList.add('selected');
+        document.getElementById('modeInkBtn').classList.remove('selected');
+      }
+    }
+
+    function setTextMode(mode) {
+      textMode = mode;
+      if (mode === 'ink') {
+        document.getElementById('modeTextInkBtn').classList.add('selected');
+        document.getElementById('modeTextPaperBtn').classList.remove('selected');
+      } else {
+        document.getElementById('modeTextPaperBtn').classList.add('selected');
+        document.getElementById('modeTextInkBtn').classList.remove('selected');
+      }
+    }
+
+    function updateStampSize(val) {
+      stampSize = Number(val);
+      document.getElementById('stampSizeVal').innerText = `${stampSize}px`;
+    }
+
+    function updateTextSize(val) {
+      textSize = Number(val);
+      document.getElementById('textSizeVal').innerText = `${textSize}px`;
+    }
+
+    function setSize(size) {
+      brushSize = size;
+      [8, 16, 28].forEach(s => {
+        const btn = document.getElementById(`size${s}`);
+        if (s === size) {
+          btn.className = 'py-1.5 bg-stone-800 text-white rounded-lg text-xs font-bold';
+        } else {
+          btn.className = 'py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold';
+        }
+      });
+    }
+
+    function getCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: (clientX - rect.left) * (canvas.width / rect.width),
+        y: (clientY - rect.top) * (canvas.height / rect.height)
+      };
+    }
+
+    function applyStamp(shape, cx, cy) {
+      saveState();
+      const drawColor = stampColorMode === 'ink' ? INK_COLOR : PAPER_COLOR;
+      ctx.fillStyle = drawColor;
+      ctx.strokeStyle = drawColor;
+      const s = stampSize / 50;
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(s, s);
+
+      if (shape === 'sun') {
+        ctx.beginPath();
+        ctx.arc(0, 0, 30, 0, Math.PI * 2);
+        ctx.fill();
+        for (let i = 0; i < 8; i++) {
+          const angle = (i * Math.PI) / 4;
+          ctx.beginPath();
+          ctx.moveTo(Math.cos(angle) * 35, Math.sin(angle) * 35);
+          ctx.lineTo(Math.cos(angle) * 48, Math.sin(angle) * 48);
+          ctx.lineWidth = 5;
+          ctx.stroke();
+        }
+      } else if (shape === 'star') {
+        ctx.beginPath();
+        for (let i = 0; i < 5; i++) {
+          ctx.lineTo(Math.cos((18 + i * 72) * Math.PI / 180) * 35, -Math.sin((18 + i * 72) * Math.PI / 180) * 35);
+          ctx.lineTo(Math.cos((54 + i * 72) * Math.PI / 180) * 18, -Math.sin((54 + i * 72) * Math.PI / 180) * 18);
+        }
+        ctx.closePath();
+        ctx.fill();
+      } else if (shape === 'moon') {
+        ctx.beginPath();
+        ctx.arc(0, 0, 30, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = stampColorMode === 'ink' ? PAPER_COLOR : INK_COLOR;
+        ctx.beginPath();
+        ctx.arc(12, -5, 24, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (shape === 'bird') {
+        ctx.beginPath();
+        ctx.moveTo(-35, -15);
+        ctx.quadraticCurveTo(0, -45, 35, -15);
+        ctx.quadraticCurveTo(0, -5, -35, -15);
+        ctx.fill();
+      } else if (shape === 'cactus') {
+        ctx.fillRect(-6, -25, 12, 55);
+        ctx.fillRect(-20, -10, 14, 8);
+        ctx.fillRect(-20, -22, 6, 12);
+        ctx.fillRect(6, 2, 14, 8);
+        ctx.fillRect(14, -10, 6, 12);
+      } else if (shape === 'accordion') {
+        ctx.fillRect(-25, -15, 50, 30);
+        ctx.strokeStyle = stampColorMode === 'ink' ? PAPER_COLOR : INK_COLOR;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(-10, -15); ctx.lineTo(-10, 15);
+        ctx.moveTo(0, -15); ctx.lineTo(0, 15);
+        ctx.moveTo(10, -15); ctx.lineTo(10, 15);
+        ctx.stroke();
+      } else if (shape === 'heart') {
+        ctx.beginPath();
+        ctx.moveTo(0, 25);
+        ctx.bezierCurveTo(0, 10, -30, -20, -30, -35);
+        ctx.bezierCurveTo(-30, -55, -5, -55, 0, -35);
+        ctx.bezierCurveTo(5, -55, 30, -55, 30, -35);
+        ctx.bezierCurveTo(30, -20, 0, 10, 0, 25);
+        ctx.fill();
+      } else if (shape === 'flower') {
+        for (let i = 0; i < 6; i++) {
+          const angle = (i * Math.PI) / 3;
+          ctx.beginPath();
+          ctx.arc(Math.cos(angle) * 18, Math.sin(angle) * 18, 14, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.beginPath();
+        ctx.arc(0, 0, 10, 0, Math.PI * 2);
+        ctx.fillStyle = stampColorMode === 'ink' ? PAPER_COLOR : INK_COLOR;
+        ctx.fill();
+      } else if (shape === 'cloud') {
+        ctx.beginPath();
+        ctx.arc(-15, 0, 18, 0, Math.PI * 2);
+        ctx.arc(10, -10, 22, 0, Math.PI * 2);
+        ctx.arc(20, 10, 16, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (shape === 'fire') {
+        ctx.beginPath();
+        ctx.moveTo(0, 30);
+        ctx.quadraticCurveTo(-30, 0, -15, -25);
+        ctx.quadraticCurveTo(0, -50, 0, -50);
+        ctx.quadraticCurveTo(0, -50, 15, -25);
+        ctx.quadraticCurveTo(30, 0, 0, 30);
+        ctx.fill();
+      } else if (shape === 'flag') {
+        ctx.fillRect(-2, -30, 4, 60);
+        ctx.beginPath();
+        ctx.moveTo(2, -30);
+        ctx.lineTo(35, -20);
+        ctx.lineTo(2, -10);
+        ctx.closePath();
+        ctx.fill();
+      } else if (shape === 'house') {
+        ctx.fillRect(-20, -5, 40, 35);
+        ctx.beginPath();
+        ctx.moveTo(-25, -5);
+        ctx.lineTo(0, -30);
+        ctx.lineTo(25, -5);
+        ctx.closePath();
+        ctx.fill();
+      } else if (shape === 'guitar') {
+        ctx.fillRect(-3, -25, 6, 25);
+        ctx.beginPath();
+        ctx.arc(0, 10, 18, 0, Math.PI * 2);
+        ctx.arc(0, -5, 12, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (shape === 'balloon') {
+        ctx.beginPath();
+        ctx.arc(0, -10, 25, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(0, 15);
+        ctx.lineTo(0, 40);
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    // APLICAR TEXTO COM SUPORTE A TAMANHO E MODO NEGATIVO
+    function applyText(text, cx, cy) {
+      if (!text || text.trim() === '') return;
+      saveState();
+      const drawColor = textMode === 'ink' ? INK_COLOR : PAPER_COLOR;
+      ctx.fillStyle = drawColor;
+      ctx.font = `bold ${textSize}px Fredoka, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(text, cx, cy);
+    }
+
+    function startDraw(e) {
+      const coords = getCoords(e);
+
+      if (['sun', 'star', 'moon', 'bird', 'cactus', 'accordion', 'heart', 'flower', 'cloud', 'fire', 'flag', 'house', 'guitar', 'balloon'].includes(currentTool)) {
+        applyStamp(currentTool, coords.x, coords.y);
+        return;
+      }
+
+      if (currentTool === 'text') {
+        const txt = document.getElementById('cordelTextInput').value;
+        applyText(txt, coords.x, coords.y);
+        return;
+      }
+
+      isDrawing = true;
+      saveState();
+      lastX = coords.x;
+      lastY = coords.y;
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      const coords = getCoords(e);
+
+      ctx.strokeStyle = currentTool === 'ink' ? INK_COLOR : PAPER_COLOR;
+      ctx.fillStyle = currentTool === 'ink' ? INK_COLOR : PAPER_COLOR;
+      ctx.lineWidth = brushSize;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(coords.x, coords.y);
+      ctx.stroke();
+
+      lastX = coords.x;
+      lastY = coords.y;
+    }
+
+    function stopDraw() {
+      isDrawing = false;
+    }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', stopDraw);
+
+    canvas.addEventListener('touchstart', (e) => { startDraw(e); e.preventDefault(); }, { passive: false });
+    canvas.addEventListener('touchmove', (e) => { draw(e); e.preventDefault(); }, { passive: false });
+    window.addEventListener('touchend', stopDraw);
+
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT') return;
+
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      }
+      if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') || ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'z')) {
+        e.preventDefault();
+        redo();
+      }
+      if (e.key.toLowerCase() === 'i') {
+        setTool('ink');
+      }
+      if (e.key.toLowerCase() === 'g') {
+        setTool('gouge');
+      }
+      if (e.key.toLowerCase() === 't') {
+        setTool('text');
+      }
+    });
+
+    function clearWoodcut() {
+      saveState();
+      ctx.fillStyle = PAPER_COLOR;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      drawBorderFrame();
+    }
+
+    function loadPreset(name) {
+      clearWoodcut();
+      saveState();
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+
+      if (name === 'festa') {
+        applyStamp('flag', cx - 60, cy - 80);
+        applyStamp('balloon', cx + 60, cy - 70);
+        applyStamp('fire', cx, cy + 30);
+        applyText('FESTA JUNINA NO SERTÃO', cx, cy + 120);
+      } else if (name === 'sertao') {
+        applyStamp('sun', cx, cy - 60);
+        applyStamp('cactus', cx - 80, cy + 40);
+        applyStamp('house', cx + 70, cy + 50);
+        applyText('VIDA E POESIA', cx, cy + 130);
+      }
+    }
+
+    function exportPNG() {
+      const link = document.createElement('a');
+      link.download = `CriaNauta_Cordel_${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    window.onload = function() {
+      initCanvas();
+    };
+  </script>
+</body>
+</html>
