@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arte da Calçada Portuguesa — CriaNauta</title>
+  
+  <!-- Google Fonts: Fredoka & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              800: '#0B253C',
+              900: '#071828'
+            },
+            teal: {
+              500: '#0EA5E9'
+            },
+            gold: {
+              500: '#F59E0B'
+            },
+            paper: '#FDFBF7'
+          },
+          fontFamily: {
+            title: ['Fredoka', 'sans-serif'],
+            body: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #FDFBF7;
+      color: #0B253C;
+    }
+    h1, h2, h3, h4, .font-title {
+      font-family: 'Fredoka', sans-serif;
+    }
+
+    /* Textured Canvas Container */
+    .calçada-stage {
+      background-color: #D6D1C7;
+      background-image: radial-gradient(#B8B2A6 1.5px, transparent 1.5px);
+      background-size: 16px 16px;
+    }
+
+    /* Stone Swatch Selectors */
+    .stone-card.selected {
+      border-color: #0EA5E9;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.3);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-teal-500 selection:text-white">
+
+  <!-- HEADER / NAVIGATION -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <img src="logo_CriaNauta_3.png" alt="Logótipo CriaNauta" class="h-12 w-auto object-contain transition-transform group-hover:scale-105" onerror="this.src='logo_CriaNauta_2.png'">
+      </a>
+      
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-title px-4 py-2 rounded-full text-sm transition-all border border-slate-200">
+          <i class="fa-solid fa-arrow-left text-xs"></i>
+          <span>Voltar ao Início</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col gap-6">
+
+    <!-- HERO & INTRO -->
+    <section class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+      <div>
+        <span class="inline-block px-2.5 py-0.5 bg-amber-500/10 text-amber-600 text-xs font-bold rounded mb-1">ARTEFACTO PATRIMONIAL & MATEMÁTICO</span>
+        <h1 class="text-2xl sm:text-3xl font-bold text-navy-800">Oficina de Calçada Portuguesa</h1>
+        <p class="text-slate-600 text-sm">Assenta pedras de calcário e basalto, cria rosáceas, explora simetrias e desenha mosaicos tradicionais.</p>
+      </div>
+
+      <!-- Quick Preset Selector -->
+      <div class="flex items-center gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200">
+        <span class="text-xs font-bold text-navy-800 px-2 font-title">Padrões:</span>
+        <button onclick="loadPreset('marLargo')" class="px-2.5 py-1.5 bg-white hover:bg-teal-50 text-slate-700 hover:text-teal-600 border border-slate-200 rounded-lg text-xs font-semibold transition-all">🌊 Mar Largo</button>
+        <button onclick="loadPreset('rosaVentos')" class="px-2.5 py-1.5 bg-white hover:bg-teal-50 text-slate-700 hover:text-teal-600 border border-slate-200 rounded-lg text-xs font-semibold transition-all">🧭 Rosa Ventos</button>
+        <button onclick="loadPreset('xadrez')" class="px-2.5 py-1.5 bg-white hover:bg-teal-50 text-slate-700 hover:text-teal-600 border border-slate-200 rounded-lg text-xs font-semibold transition-all">🏁 Xadrez</button>
+      </div>
+    </section>
+
+    <!-- WORKSPACE -->
+    <div class="grid lg:grid-cols-12 gap-6 items-start">
+
+      <!-- TOOLBAR PANEL -->
+      <aside class="lg:col-span-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-5">
+        <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+          <h2 class="font-title font-bold text-navy-800 text-lg">Ferramentas</h2>
+          <span class="text-xs bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded">Calceteiro</span>
+        </div>
+
+        <!-- Material Selection (Stones) -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Pedras & Tipo de Calcário</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="setStone('#EFECE6')" id="stoneWhite" class="stone-card selected flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-[#EFECE6] text-slate-800 transition-all">
+              <span class="w-6 h-6 rounded-md bg-[#EFECE6] shadow-inner border border-slate-300"></span>
+              <span class="text-[10px] font-bold mt-1">Branco</span>
+            </button>
+            <button onclick="setStone('#2B2A29')" id="stoneBlack" class="stone-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-[#2B2A29] text-white transition-all">
+              <span class="w-6 h-6 rounded-md bg-[#2B2A29] shadow-inner border border-slate-600"></span>
+              <span class="text-[10px] font-bold mt-1">Basalto</span>
+            </button>
+            <button onclick="setStone('#A85D48')" id="stoneRed" class="stone-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-[#A85D48] text-white transition-all">
+              <span class="w-6 h-6 rounded-md bg-[#A85D48] shadow-inner border border-slate-500"></span>
+              <span class="text-[10px] font-bold mt-1">Vermelho</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Action Tools -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Ação</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="setTool('hammer')" id="toolHammer" class="flex flex-col items-center p-2 rounded-xl border border-teal-500 bg-teal-50 text-teal-700 font-medium text-xs gap-1">
+              <i class="fa-solid fa-hammer text-base"></i><span>Martelo</span>
+            </button>
+            <button onclick="setTool('fill')" id="toolFill" class="flex flex-col items-center p-2 rounded-xl border border-slate-200 text-slate-600 font-medium text-xs gap-1">
+              <i class="fa-solid fa-fill-drip text-base"></i><span>Argamassa</span>
+            </button>
+            <button onclick="setTool('eraser')" id="toolEraser" class="flex flex-col items-center p-2 rounded-xl border border-slate-200 text-slate-600 font-medium text-xs gap-1">
+              <i class="fa-solid fa-broom text-base"></i><span>Limpar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Symmetry Modes (Maths) -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Modo de Simetria (Geometria)</label>
+          <select id="symmetrySelect" onchange="setSymmetry(this.value)" class="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-700 outline-none focus:border-teal-500">
+            <option value="none">Livre (Sem Simetria)</option>
+            <option value="horizontal">Espelho Horizontal (─────)</option>
+            <option value="vertical">Espelho Vertical (│)</option>
+            <option value="radial4">Rosácea / Radial (4 Vias ┼)</option>
+          </select>
+        </div>
+
+        <!-- Grid Size -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Tamanho da Mosaico</label>
+          <select id="gridSelect" onchange="changeGridSize(Number(this.value))" class="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-700 outline-none">
+            <option value="16">16 × 16 (Pedra Grande)</option>
+            <option value="24" selected>24 × 24 (Tradicional)</option>
+            <option value="32">32 × 32 (Mosaico Detalhado)</option>
+          </select>
+        </div>
+
+        <!-- Clear / Export Actions -->
+        <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
+          <button onclick="clearGrid()" class="py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition-all">
+            <i class="fa-solid fa-trash-can mr-1"></i> Limpar Calçada
+          </button>
+        </div>
+      </aside>
+
+      <!-- MAIN CANVAS DISPLAY -->
+      <section class="lg:col-span-6 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-title font-bold text-navy-800 text-lg">O Teu Mosaico</h2>
+            <p id="canvasHint" class="text-xs text-slate-500">Clica ou arrasta o martelo para assentar as pedras.</p>
+          </div>
+          <button onclick="exportPNG()" class="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold font-title px-4 py-2 rounded-xl shadow transition-all">
+            <i class="fa-solid fa-download"></i> Guardar Obra (PNG)
+          </button>
+        </div>
+
+        <!-- Canvas Frame -->
+        <div class="calçada-stage relative w-full aspect-square border-4 border-[#8C8475] rounded-2xl p-3 shadow-inner flex items-center justify-center overflow-hidden">
+          <canvas id="calçadaCanvas" width="600" height="600" class="w-full h-full block cursor-crosshair rounded-lg shadow-md"></canvas>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-slate-500 font-medium pt-1">
+          <span><i class="fa-solid fa-cubes text-amber-600 mr-1"></i> <span id="stoneCount">0</span> pedras assentadas</span>
+          <span id="gridDimLabel">24 × 24</span>
+        </div>
+      </section>
+
+      <!-- EDUCATIONAL & PATRIMONY INFO -->
+      <aside class="lg:col-span-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-4">
+        <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+          <h2 class="font-title font-bold text-navy-800 text-lg">Sabias que...?</h2>
+          <span class="text-xs bg-sky-100 text-sky-800 font-semibold px-2 py-0.5 rounded">Património</span>
+        </div>
+
+        <div class="space-y-3 text-xs text-slate-600 leading-relaxed">
+          <div class="p-3 bg-amber-50 rounded-xl border border-amber-100 space-y-1">
+            <strong class="text-navy-800 font-title text-sm flex items-center gap-1.5">
+              <i class="fa-solid fa-monument text-amber-600"></i> Arte Tradicional
+            </strong>
+            <p>A Calçada Portuguesa nasceu no século XIX em Lisboa. As pedras são talhadas à mão por mestre calceteiros!</p>
+          </div>
+
+          <div class="p-3 bg-sky-50 rounded-xl border border-sky-100 space-y-1">
+            <strong class="text-navy-800 font-title text-sm flex items-center gap-1.5">
+              <i class="fa-solid fa-shapes text-teal-600"></i> Geometria Viva
+            </strong>
+            <p>Muitos dos padrões usam <strong>reflexão</strong>, <strong>translação</strong> e <strong>rotação</strong> para criar ritmos visuais perfeitos.</p>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-navy-900 text-slate-300 py-8 border-t border-navy-800 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <img src="logo_CriaNauta_3.png" alt="CriaNauta" class="h-8 w-auto object-contain brightness-200" onerror="this.src='logo_CriaNauta_2.png'">
+      </div>
+      <p class="text-xs text-slate-400 text-center">CriaNauta · Artefactos pedagógicos para explorar e aprender no 1.º Ciclo do Ensino Básico.</p>
+      <div class="text-xs text-slate-500">
+        <span>© 2026 CriaNauta</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT ENGINE -->
+  <script>
+    const canvas = document.getElementById('calçadaCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let gridSize = 24;
+    let selectedStone = '#EFECE6';
+    let currentTool = 'hammer';
+    let symmetry = 'none';
+    let isDrawing = false;
+    let grid = [];
+
+    function initGrid(size) {
+      gridSize = size;
+      grid = Array.from({ length: gridSize }, () => Array(gridSize).fill('#EFECE6'));
+      document.getElementById('gridDimLabel').innerText = `${gridSize} × ${gridSize}`;
+      draw();
+    }
+
+    function setStone(color) {
+      selectedStone = color;
+      document.querySelectorAll('.stone-card').forEach(card => card.classList.remove('selected'));
+      if (color === '#EFECE6') document.getElementById('stoneWhite').classList.add('selected');
+      if (color === '#2B2A29') document.getElementById('stoneBlack').classList.add('selected');
+      if (color === '#A85D48') document.getElementById('stoneRed').classList.add('selected');
+    }
+
+    function setTool(tool) {
+      currentTool = tool;
+      document.getElementById('toolHammer').className = tool === 'hammer' ? 'flex flex-col items-center p-2 rounded-xl border border-teal-500 bg-teal-50 text-teal-700 font-medium text-xs gap-1' : 'flex flex-col items-center p-2 rounded-xl border border-slate-200 text-slate-600 font-medium text-xs gap-1';
+      document.getElementById('toolFill').className = tool === 'fill' ? 'flex flex-col items-center p-2 rounded-xl border border-teal-500 bg-teal-50 text-teal-700 font-medium text-xs gap-1' : 'flex flex-col items-center p-2 rounded-xl border border-slate-200 text-slate-600 font-medium text-xs gap-1';
+      document.getElementById('toolEraser').className = tool === 'eraser' ? 'flex flex-col items-center p-2 rounded-xl border border-teal-500 bg-teal-50 text-teal-700 font-medium text-xs gap-1' : 'flex flex-col items-center p-2 rounded-xl border border-slate-200 text-slate-600 font-medium text-xs gap-1';
+    }
+
+    function setSymmetry(sym) {
+      symmetry = sym;
+    }
+
+    function changeGridSize(size) {
+      if (confirm("Alterar o tamanho apaga o mosaico atual. Queres continuar?")) {
+        initGrid(size);
+      }
+    }
+
+    function drawStone(x, y, color) {
+      if (x < 0 || x >= gridSize || y < 0 || y >= gridSize) return;
+      grid[y][x] = color;
+
+      // Apply Symmetry
+      if (symmetry === 'horizontal' || symmetry === 'radial4') {
+        grid[gridSize - 1 - y][x] = color;
+      }
+      if (symmetry === 'vertical' || symmetry === 'radial4') {
+        grid[y][gridSize - 1 - x] = color;
+      }
+      if (symmetry === 'radial4') {
+        grid[gridSize - 1 - y][gridSize - 1 - x] = color;
+      }
+    }
+
+    function draw() {
+      const tileSize = canvas.width / gridSize;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      let placedCount = 0;
+
+      for (let r = 0; r < gridSize; r++) {
+        for (let c = 0; c < gridSize; c++) {
+          const color = grid[r][c];
+          if (color !== '#EFECE6') placedCount++;
+
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.roundRect(c * tileSize + 1, r * tileSize + 1, tileSize - 2, tileSize - 2, 3);
+          ctx.fill();
+
+          // Stone Texture Border Effect
+          ctx.strokeStyle = color === '#EFECE6' ? '#D0CBBE' : 'rgba(0,0,0,0.2)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+
+      document.getElementById('stoneCount').innerText = placedCount;
+    }
+
+    function floodFill(x, y, targetColor, fillColor) {
+      if (targetColor === fillColor) return;
+      if (x < 0 || x >= gridSize || y < 0 || y >= gridSize) return;
+      if (grid[y][x] !== targetColor) return;
+
+      grid[y][x] = fillColor;
+
+      floodFill(x + 1, y, targetColor, fillColor);
+      floodFill(x - 1, y, targetColor, fillColor);
+      floodFill(x, y + 1, targetColor, fillColor);
+      floodFill(x, y - 1, targetColor, fillColor);
+    }
+
+    function getCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const x = Math.floor((clientX - rect.left) / (rect.width / gridSize));
+      const y = Math.floor((clientY - rect.top) / (rect.height / gridSize));
+      return { x, y };
+    }
+
+    function handleStart(e) {
+      isDrawing = true;
+      const { x, y } = getCoords(e);
+      const color = currentTool === 'eraser' ? '#EFECE6' : selectedStone;
+
+      if (currentTool === 'fill') {
+        floodFill(x, y, grid[y][x], color);
+      } else {
+        drawStone(x, y, color);
+      }
+      draw();
+    }
+
+    function handleMove(e) {
+      if (!isDrawing || currentTool === 'fill') return;
+      const { x, y } = getCoords(e);
+      const color = currentTool === 'eraser' ? '#EFECE6' : selectedStone;
+      drawStone(x, y, color);
+      draw();
+    }
+
+    function handleEnd() {
+      isDrawing = false;
+    }
+
+    canvas.addEventListener('mousedown', handleStart);
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleEnd);
+
+    canvas.addEventListener('touchstart', (e) => { handleStart(e); e.preventDefault(); }, { passive: false });
+    window.addEventListener('touchmove', handleMove);
+    window.addEventListener('touchend', handleEnd);
+
+    function clearGrid() {
+      initGrid(gridSize);
+    }
+
+    function loadPreset(name) {
+      initGrid(24);
+      if (name === 'xadrez') {
+        for (let r = 0; r < 24; r++) {
+          for (let c = 0; c < 24; c++) {
+            if ((Math.floor(r / 3) + Math.floor(c / 3)) % 2 === 0) {
+              grid[r][c] = '#2B2A29';
+            }
+          }
+        }
+      } else if (name === 'rosaVentos') {
+        const center = 11;
+        for (let r = 0; r < 24; r++) {
+          for (let c = 0; c < 24; c++) {
+            if (Math.abs(r - center) + Math.abs(c - center) <= 8) {
+              grid[r][c] = '#2B2A29';
+            }
+          }
+        }
+      } else if (name === 'marLargo') {
+        for (let r = 0; r < 24; r++) {
+          for (let c = 0; c < 24; c++) {
+            if (Math.sin(c / 2) * 3 + 12 > r) {
+              grid[r][c] = '#2B2A29';
+            }
+          }
+        }
+      }
+      draw();
+    }
+
+    function exportPNG() {
+      const link = document.createElement('a');
+      link.download = `CriaNauta_Calcada_${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    window.onload = function() {
+      initGrid(24);
+    };
+  </script>
+</body>
+</html>

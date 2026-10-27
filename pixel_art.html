@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0B253C">
+  <title>Oficina de Pixel Art — CriaNauta</title>
+  
+  <!-- Google Fonts: Fredoka & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              800: '#0B253C',
+              900: '#071828'
+            },
+            teal: {
+              400: '#38BDF8',
+              500: '#0EA5E9',
+              600: '#0284C7'
+            },
+            gold: {
+              400: '#F59E0B',
+              500: '#D97706'
+            },
+            cream: '#FDFBF7'
+          },
+          fontFamily: {
+            title: ['Fredoka', 'sans-serif'],
+            body: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #FDFBF7;
+      color: #0B253C;
+    }
+    h1, h2, h3, h4, .font-title {
+      font-family: 'Fredoka', sans-serif;
+    }
+
+    /* Pixelated canvas rendering */
+    #pixelCanvas {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      touch-action: none;
+    }
+
+    /* Custom Toast Animation */
+    .toast-enter {
+      animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    @keyframes popIn {
+      0% { opacity: 0; transform: translate(-50%, 16px) scale(0.95); }
+      100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-teal-500 selection:text-white">
+
+  <!-- HEADER / NAVIGATION IDENTICAL TO ECOSYSTEM -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <img src="logo_CriaNauta_3.png" alt="Logótipo CriaNauta" class="h-12 w-auto object-contain transition-transform group-hover:scale-105">
+      </a>
+      
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-title px-4 py-2 rounded-full text-sm transition-all border border-slate-200">
+          <i class="fa-solid fa-arrow-left text-xs"></i>
+          <span>Voltar ao Início</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col gap-6">
+
+    <!-- HERO & BANNER -->
+    <section class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+      <div>
+        <span class="inline-block px-2.5 py-0.5 bg-teal-500/10 text-teal-600 text-xs font-bold rounded mb-1">LABORATÓRIO DE ARTE DIGITAL</span>
+        <h1 class="text-2xl sm:text-3xl font-bold text-navy-800">Pixel a pixel, cria o teu mundo</h1>
+        <p class="text-slate-600 text-sm">Dá vida às tuas ideias quadrado a quadrado. Experimenta a nova resolução até 128×128!</p>
+      </div>
+
+      <!-- Creative Mission Card -->
+      <aside class="bg-amber-50 border border-amber-200/80 rounded-xl p-3.5 max-w-xs flex items-center gap-3 shadow-sm">
+        <div class="w-10 h-10 rounded-lg bg-amber-400/20 flex items-center justify-center text-amber-600 text-xl flex-shrink-0">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </div>
+        <div>
+          <strong class="block text-xs font-title text-navy-800">✨ Missão Criativa</strong>
+          <span class="text-xs text-slate-600 leading-tight block">Consegues criar um ícone de um planeta usando apenas 5 cores?</span>
+        </div>
+      </aside>
+    </section>
+
+    <!-- WORKSPACE (SIDEBAR + CANVAS) -->
+    <div class="grid lg:grid-cols-12 gap-6 items-start">
+
+      <!-- TOOLPANEL / SIDEBAR -->
+      <aside class="lg:col-span-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-5">
+        
+        <!-- Section 1: Tools -->
+        <div class="space-y-3">
+          <div class="border-b border-slate-100 pb-2 flex justify-between items-center">
+            <h2 class="font-title font-bold text-navy-800 text-base flex items-center gap-2">
+              <span class="w-5 h-5 rounded bg-sky-100 text-teal-600 text-xs flex items-center justify-center font-bold">1</span>
+              Ferramentas
+            </h2>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="setTool('pencil')" data-tool="pencil" class="tool-btn flex flex-col items-center justify-center p-2.5 rounded-xl border border-teal-500 bg-teal-50 text-teal-700 font-medium text-xs gap-1 transition-all">
+              <i class="fa-solid fa-pencil text-base"></i><span>Pincel</span>
+            </button>
+            <button onclick="setTool('eraser')" data-tool="eraser" class="tool-btn flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-600 font-medium text-xs gap-1 transition-all">
+              <i class="fa-solid fa-eraser text-base"></i><span>Borracha</span>
+            </button>
+            <button onclick="setTool('fill')" data-tool="fill" class="tool-btn flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-600 font-medium text-xs gap-1 transition-all">
+              <i class="fa-solid fa-fill-drip text-base"></i><span>Preencher</span>
+            </button>
+            <button onclick="setTool('picker')" data-tool="picker" class="tool-btn flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-600 font-medium text-xs gap-1 transition-all">
+              <i class="fa-solid fa-eye-dropper text-base"></i><span>Pipeta</span>
+            </button>
+            <button onclick="undo()" id="btnUndo" disabled class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 disabled:opacity-40 hover:border-slate-300 text-slate-600 font-medium text-xs gap-1 transition-all">
+              <i class="fa-solid fa-rotate-left text-base"></i><span>Anular</span>
+            </button>
+            <button onclick="clearGrid()" class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:border-rose-300 hover:bg-rose-50 text-rose-600 font-medium text-xs gap-1 transition-all">
+              <i class="fa-solid fa-trash-can text-base"></i><span>Limpar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 2: Palette -->
+        <div class="space-y-3">
+          <div class="border-b border-slate-100 pb-2 flex justify-between items-center">
+            <h2 class="font-title font-bold text-navy-800 text-base flex items-center gap-2">
+              <span class="w-5 h-5 rounded bg-sky-100 text-teal-600 text-xs flex items-center justify-center font-bold">2</span>
+              Paleta de Cores
+            </h2>
+          </div>
+          <div id="paletteGrid" class="grid grid-cols-6 gap-2"></div>
+          <div class="flex items-center gap-3 p-2 bg-slate-50 border border-slate-200 rounded-xl">
+            <input type="color" id="customColor" value="#0B253C" class="w-8 h-8 rounded-lg border border-slate-300 cursor-pointer p-0.5">
+            <label for="customColor" class="text-xs font-semibold text-slate-700 cursor-pointer">Cor Personalizada</label>
+          </div>
+        </div>
+
+        <!-- Section 3: Canvas Setup -->
+        <div class="space-y-3">
+          <div class="border-b border-slate-100 pb-2 flex justify-between items-center">
+            <h2 class="font-title font-bold text-navy-800 text-base flex items-center gap-2">
+              <span class="w-5 h-5 rounded bg-sky-100 text-teal-600 text-xs flex items-center justify-center font-bold">3</span>
+              Grelha e Opções
+            </h2>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="gridSize" class="block text-xs font-bold text-slate-600 mb-1">Tamanho da Grelha</label>
+              <select id="gridSize" onchange="changeGridSize(this.value)" class="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-700 outline-none focus:border-teal-500">
+                <option value="16">16 × 16 (Básico)</option>
+                <option value="24">24 × 24</option>
+                <option value="32" selected>32 × 32 (Recomendado)</option>
+                <option value="64">64 × 64 (Detalhado)</option>
+                <option value="128">128 × 128 (Alta Definição)</option>
+              </select>
+            </div>
+            <div>
+              <label for="gridLines" class="block text-xs font-bold text-slate-600 mb-1">Linhas da Grelha</label>
+              <select id="gridLines" onchange="toggleGridLines(this.value)" class="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-700 outline-none focus:border-teal-500">
+                <option value="on" selected>Visível</option>
+                <option value="off">Escondida</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Example Template Button -->
+        <button onclick="loadExample()" class="w-full py-2.5 px-4 bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 text-xs font-bold font-title rounded-xl transition-all flex items-center justify-center gap-2">
+          <i class="fa-solid fa-shapes"></i> Carregar Exemplo Demonstrativo
+        </button>
+
+      </aside>
+
+      <!-- CANVAS DISPLAY PANEL -->
+      <section class="lg:col-span-8 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-4">
+        
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <h2 class="font-title font-bold text-navy-800 text-lg">A tua Tela de Píxeis</h2>
+            <span id="activeStatus" class="text-xs text-slate-500 font-medium">Pincel ativo · Azul Marinho</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="exportPNG()" class="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold font-title px-4 py-2 rounded-xl shadow transition-all">
+              <i class="fa-solid fa-download"></i> Guardar PNG
+            </button>
+          </div>
+        </div>
+
+        <!-- Canvas Frame Container -->
+        <div class="relative w-full aspect-square max-w-[640px] mx-auto bg-slate-100 border border-slate-200 rounded-xl overflow-hidden flex items-center justify-center shadow-inner">
+          <canvas id="pixelCanvas" width="640" height="640" class="w-full h-full block bg-white cursor-crosshair"></canvas>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-slate-500 font-semibold pt-1 border-t border-slate-100">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span id="pixelCount">0 píxeis pintados</span>
+          </div>
+          <span id="dimensions">32 × 32</span>
+        </div>
+
+        <!-- EDUCATIONAL TIPS & CHALLENGES -->
+        <div class="grid sm:grid-cols-2 gap-4 pt-2">
+          <div class="p-4 bg-sky-50 rounded-xl border border-sky-100 flex items-start gap-3">
+            <i class="fa-solid fa-lightbulb text-teal-500 text-xl mt-0.5"></i>
+            <div>
+              <strong class="font-title text-navy-800 text-sm block">Sabias que...?</strong>
+              <p class="text-xs text-slate-600 leading-relaxed mt-0.5">Em Pixel Art cada quadrado conta. Começa por desenhar a silhueta da tua forma antes de preencher os detalhes.</p>
+            </div>
+          </div>
+
+          <div class="p-4 bg-amber-50 rounded-xl border border-amber-100 flex items-start gap-3">
+            <i class="fa-solid fa-rocket text-amber-500 text-xl mt-0.5"></i>
+            <div>
+              <strong class="font-title text-navy-800 text-sm block">Desafio 128×128</strong>
+              <p class="text-xs text-slate-600 leading-relaxed mt-0.5">Sobe o tamanho para 128x128 para desenhar um cenário espacial completo com estrelas, naves e planetas!</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- FOOTER IDENTICAL TO ECOSYSTEM -->
+  <footer class="bg-navy-900 text-slate-300 py-8 border-t border-navy-800 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <img src="logo_CriaNauta_3.png" alt="CriaNauta" class="h-8 w-auto object-contain brightness-200">
+      </div>
+      <p class="text-xs text-slate-400 text-center">CriaNauta · Artefactos pedagógicos para explorar e aprender no 1.º Ciclo do Ensino Básico.</p>
+      <div class="text-xs text-slate-500">
+        <span>© 2026 CriaNauta</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-navy-800 text-white px-4 py-2.5 rounded-xl shadow-xl text-xs font-bold z-50 pointer-events-none opacity-0 transition-opacity"></div>
+
+  <!-- ULTRA-PERFORMANT ENGINE SCRIPT -->
+  <script>
+    const canvas = document.getElementById("pixelCanvas");
+    const ctx = canvas.getContext("2d", { alpha: false });
+    const toast = document.getElementById("toast");
+    const customColor = document.getElementById("customColor");
+
+    const PALETTE = [
+      { hex: '#0B253C', name: 'Azul Marinho' },
+      { hex: '#0EA5E9', name: 'Turquesa' },
+      { hex: '#F59E0B', name: 'Dourado' },
+      { hex: '#FF795F', name: 'Coral' },
+      { hex: '#10B981', name: 'Verde' },
+      { hex: '#8B5CF6', name: 'Roxo' },
+      { hex: '#EC4899', name: 'Rosa' },
+      { hex: '#64748B', name: 'Cinza' },
+      { hex: '#20252B', name: 'Preto Suave' },
+      { hex: '#FFFFFF', name: 'Branco' }
+    ];
+
+    let gridSize = 32;
+    let selectedColor = '#0B253C';
+    let tool = 'pencil';
+    let showGrid = true;
+    
+    // Performance optimized data structures: 1D typed Uint32Array representing colors as packed 0xAABBGGRR
+    let pixelData = new Uint32Array(32 * 32);
+    let undoStack = [];
+    let isDrawing = false;
+    let lastCell = null;
+    let toastTimer = null;
+
+    const toolNames = { pencil: 'Pincel', eraser: 'Borracha', fill: 'Preencher', picker: 'Pipeta' };
+
+    // Convert Hex to 32-bit ABGR uint32 for ultra-fast rendering
+    function hexToUint32(hex) {
+      if (hex.startsWith('#')) hex = hex.slice(1);
+      if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+      const r = parseInt(hex.substring(0, 2), 16) || 0;
+      const g = parseInt(hex.substring(2, 4), 16) || 0;
+      const b = parseInt(hex.substring(4, 6), 16) || 0;
+      return (0xFF << 24) | (b << 16) | (g << 8) | r;
+    }
+
+    function uint32ToHex(u32) {
+      const r = (u32 & 0xFF).toString(16).padStart(2, '0');
+      const g = ((u32 >> 8) & 0xFF).toString(16).padStart(2, '0');
+      const b = ((u32 >> 16) & 0xFF).toString(16).padStart(2, '0');
+      return `#${r}${g}${b}`.toUpperCase();
+    }
+
+    function notify(msg) {
+      toast.innerText = msg;
+      toast.classList.remove('opacity-0');
+      toast.classList.add('toast-enter');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add('opacity-0');
+        toast.classList.remove('toast-enter');
+      }, 2200);
+    }
+
+    function renderPalette() {
+      const paletteGrid = document.getElementById("paletteGrid");
+      paletteGrid.innerHTML = '';
+      PALETTE.forEach(c => {
+        const btn = document.createElement("button");
+        btn.className = `w-full aspect-square rounded-lg border-2 transition-transform hover:scale-110 ${c.hex.toUpperCase() === selectedColor.toUpperCase() ? 'border-teal-500 scale-105 shadow-md' : 'border-slate-200'}`;
+        btn.style.backgroundColor = c.hex;
+        btn.title = c.name;
+        btn.onclick = () => {
+          selectedColor = c.hex;
+          customColor.value = c.hex;
+          renderPalette();
+          updateStatus();
+        };
+        paletteGrid.appendChild(btn);
+      });
+    }
+
+    function renderCanvas() {
+      const width = canvas.width;
+      const height = canvas.height;
+      const cell = width / gridSize;
+
+      // Draw background & pixels
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, width, height);
+
+      for (let y = 0; y < gridSize; y++) {
+        for (let x = 0; x < gridSize; x++) {
+          const colorU32 = pixelData[y * gridSize + x];
+          if (colorU32 !== 0 && colorU32 !== 0xFFFFFFFF) {
+            ctx.fillStyle = uint32ToHex(colorU32);
+            ctx.fillRect(x * cell, y * cell, cell, cell);
+          }
+        }
+      }
+
+      // Draw Grid Lines cleanly
+      if (showGrid) {
+        ctx.fillStyle = gridSize >= 64 ? 'rgba(11,37,60,0.08)' : 'rgba(11,37,60,0.15)';
+        for (let i = 0; i <= gridSize; i++) {
+          const p = Math.round(i * cell);
+          ctx.fillRect(p, 0, 1, height);
+          ctx.fillRect(0, p, width, 1);
+        }
+      }
+
+      // Calculate stats
+      let painted = 0;
+      for (let i = 0; i < pixelData.length; i++) {
+        if (pixelData[i] !== 0 && pixelData[i] !== 0xFFFFFFFF) painted++;
+      }
+      document.getElementById("pixelCount").innerText = `${painted} ${painted === 1 ? 'píxel pintado' : 'píxeis pintados'}`;
+      document.getElementById("dimensions").innerText = `${gridSize} × ${gridSize}`;
+    }
+
+    function saveUndo() {
+      undoStack.push({
+        size: gridSize,
+        data: new Uint32Array(pixelData)
+      });
+      if (undoStack.length > 40) undoStack.shift();
+      document.getElementById("btnUndo").disabled = undoStack.length === 0;
+    }
+
+    function undo() {
+      if (undoStack.length === 0) return;
+      const prev = undoStack.pop();
+      if (prev.size !== gridSize) {
+        gridSize = prev.size;
+        document.getElementById("gridSize").value = gridSize;
+      }
+      pixelData = new Uint32Array(prev.data);
+      document.getElementById("btnUndo").disabled = undoStack.length === 0;
+      renderCanvas();
+      notify("Ação anulada.");
+    }
+
+    function setTool(newTool) {
+      tool = newTool;
+      document.querySelectorAll(".tool-btn").forEach(btn => {
+        if (btn.dataset.tool === newTool) {
+          btn.className = "tool-btn flex flex-col items-center justify-center p-2.5 rounded-xl border border-teal-500 bg-teal-50 text-teal-700 font-medium text-xs gap-1 transition-all";
+        } else {
+          btn.className = "tool-btn flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-600 font-medium text-xs gap-1 transition-all";
+        }
+      });
+      updateStatus();
+    }
+
+    function updateStatus() {
+      const match = PALETTE.find(c => c.hex.toUpperCase() === selectedColor.toUpperCase());
+      const cName = match ? match.name : selectedColor;
+      document.getElementById("activeStatus").innerText = `${toolNames[tool]} ativo · ${cName}`;
+    }
+
+    function getCellPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const x = Math.floor(((clientX - rect.left) / rect.width) * gridSize);
+      const y = Math.floor(((clientY - rect.top) / rect.height) * gridSize);
+      if (x < 0 || y < 0 || x >= gridSize || y >= gridSize) return null;
+      return { x, y };
+    }
+
+    function paintPixel(x, y) {
+      const index = y * gridSize + x;
+      if (tool === 'picker') {
+        const pickedVal = pixelData[index];
+        if (pickedVal !== 0 && pickedVal !== 0xFFFFFFFF) {
+          selectedColor = uint32ToHex(pickedVal);
+          customColor.value = selectedColor;
+          renderPalette();
+          updateStatus();
+          notify("Cor selecionada!");
+        }
+        return;
+      }
+
+      const targetU32 = tool === 'eraser' ? 0xFFFFFFFF : hexToUint32(selectedColor);
+      if (pixelData[index] !== targetU32) {
+        pixelData[index] = targetU32;
+      }
+    }
+
+    // High performance Flood Fill algorithm using TypedArrays
+    function floodFill(startX, startY) {
+      const targetColor = pixelData[startY * gridSize + startX];
+      const fillColor = hexToUint32(selectedColor);
+      if (targetColor === fillColor) return;
+
+      const queue = [startX, startY];
+      while (queue.length > 0) {
+        const cy = queue.pop();
+        const cx = queue.pop();
+        const idx = cy * gridSize + cx;
+
+        if (cx >= 0 && cx < gridSize && cy >= 0 && cy < gridSize && pixelData[idx] === targetColor) {
+          pixelData[idx] = fillColor;
+          queue.push(cx + 1, cy);
+          queue.push(cx - 1, cy);
+          queue.push(cx, cy + 1);
+          queue.push(cx, cy - 1);
+        }
+      }
+    }
+
+    function startDraw(e) {
+      const cell = getCellPos(e);
+      if (!cell) return;
+      saveUndo();
+
+      if (tool === 'fill') {
+        floodFill(cell.x, cell.y);
+        renderCanvas();
+        return;
+      }
+
+      isDrawing = true;
+      lastCell = cell;
+      paintPixel(cell.x, cell.y);
+      renderCanvas();
+    }
+
+    function moveDraw(e) {
+      if (!isDrawing) return;
+      const cell = getCellPos(e);
+      if (!cell || (lastCell && lastCell.x === cell.x && lastCell.y === cell.y)) return;
+      lastCell = cell;
+      paintPixel(cell.x, cell.y);
+      renderCanvas();
+    }
+
+    function endDraw() {
+      isDrawing = false;
+      lastCell = null;
+    }
+
+    function clearGrid() {
+      if (confirm("Tens a certeza que queres limpar a grelha toda?")) {
+        saveUndo();
+        pixelData.fill(0);
+        renderCanvas();
+        notify("Grelha limpa!");
+      }
+    }
+
+    function changeGridSize(newSize) {
+      const next = Number(newSize);
+      if (confirm(`Alterar a grelha para ${next}×${next} vai reajustar o teu desenho. Queres continuar?`)) {
+        saveUndo();
+        const oldData = pixelData;
+        const oldSize = gridSize;
+        gridSize = next;
+        pixelData = new Uint32Array(gridSize * gridSize);
+
+        // Copy overlapping area
+        const copyLimit = Math.min(oldSize, gridSize);
+        for (let y = 0; y < copyLimit; y++) {
+          for (let x = 0; x < copyLimit; x++) {
+            pixelData[y * gridSize + x] = oldData[y * oldSize + x];
+          }
+        }
+        renderCanvas();
+        notify(`Grelha alterada para ${gridSize} × ${gridSize}`);
+      } else {
+        document.getElementById("gridSize").value = gridSize;
+      }
+    }
+
+    function toggleGridLines(val) {
+      showGrid = val === "on";
+      renderCanvas();
+    }
+
+    function loadExample() {
+      saveUndo();
+      gridSize = 32;
+      document.getElementById("gridSize").value = "32";
+      pixelData = new Uint32Array(32 * 32);
+
+      const color1 = hexToUint32('#0EA5E9'); // Turquoise
+      const color2 = hexToUint32('#F59E0B'); // Gold
+      const color3 = hexToUint32('#0B253C'); // Navy
+
+      // Draw planet outline & rings
+      for (let y = 0; y < 32; y++) {
+        for (let x = 0; x < 32; x++) {
+          const dx = x - 16;
+          const dy = y - 16;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 8) {
+            pixelData[y * 32 + x] = color1;
+          } else if (Math.abs(dy + dx * 0.4) < 2 && Math.abs(dx) < 14) {
+            pixelData[y * 32 + x] = color2;
+          } else if (dist >= 8 && dist < 9) {
+            pixelData[y * 32 + x] = color3;
+          }
+        }
+      }
+
+      renderCanvas();
+      notify("Exemplo de Planeta carregado em 32x32!");
+    }
+
+    function exportPNG() {
+      const exportCanvas = document.createElement("canvas");
+      const scale = Math.max(1, Math.floor(1024 / gridSize));
+      exportCanvas.width = gridSize * scale;
+      exportCanvas.height = gridSize * scale;
+      const eCtx = exportCanvas.getContext("2d");
+      eCtx.imageSmoothingEnabled = false;
+
+      eCtx.fillStyle = '#FFFFFF';
+      eCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+      for (let y = 0; y < gridSize; y++) {
+        for (let x = 0; x < gridSize; x++) {
+          const cU32 = pixelData[y * gridSize + x];
+          if (cU32 !== 0 && cU32 !== 0xFFFFFFFF) {
+            eCtx.fillStyle = uint32ToHex(cU32);
+            eCtx.fillRect(x * scale, y * scale, scale, scale);
+          }
+        }
+      }
+
+      const link = document.createElement("a");
+      link.download = `CriaNauta_PixelArt_${gridSize}x${gridSize}_${Date.now()}.png`;
+      link.href = exportCanvas.toDataURL("image/png");
+      link.click();
+      notify("Arte descarregada com sucesso!");
+    }
+
+    // EVENT LISTENERS
+    canvas.addEventListener("mousedown", startDraw);
+    window.addEventListener("mousemove", moveDraw);
+    window.addEventListener("mouseup", endDraw);
+
+    canvas.addEventListener("touchstart", (e) => { startDraw(e); e.preventDefault(); }, { passive: false });
+    window.addEventListener("touchmove", (e) => { moveDraw(e); }, { passive: true });
+    window.addEventListener("touchend", endDraw);
+
+    customColor.addEventListener("input", (e) => {
+      selectedColor = e.target.value;
+      renderPalette();
+      updateStatus();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        undo();
+      }
+    });
+
+    // INIT
+    window.onload = function() {
+      renderPalette();
+      renderCanvas();
+      updateStatus();
+    };
+  </script>
+</body>
+</html>

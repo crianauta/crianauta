@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Espirógrafo Online — CriaNauta</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              800: '#0B253C',
+              900: '#071828'
+            },
+            teal: {
+              400: '#38BDF8',
+              500: '#0EA5E9'
+            },
+            gold: {
+              400: '#F59E0B',
+              500: '#D97706'
+            },
+            cream: '#FDFBF7'
+          },
+          fontFamily: {
+            title: ['Fredoka', 'sans-serif'],
+            body: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0B253C;
+      color: #FDFBF7;
+    }
+
+    h1, h2, h3, h4, .font-title {
+      font-family: 'Fredoka', sans-serif;
+    }
+
+    /* Range slider custom styling */
+    input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      background: rgba(14, 165, 233, 0.2);
+      height: 8px;
+      border-radius: 4px;
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #F59E0B;
+      border: 2px solid #0B253C;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+      transition: transform 0.1s;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-teal-500 selection:text-white">
+
+  <!-- HEADER / NAVIGATION (Identical structure to index.html) -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <img src="logo_CriaNauta_3.png" alt="Logótipo CriaNauta" class="h-12 w-auto object-contain transition-transform group-hover:scale-105">
+      </a>
+      
+      <nav class="hidden md:flex items-center gap-8 font-medium text-slate-700">
+        <a href="index.html#artefactos" class="hover:text-teal-500 transition-colors">Artefactos Pedagógicos</a>
+        <a href="index.html#rotas" class="hover:text-teal-500 transition-colors">Rotas Pedagógicas</a>
+        <a href="index.html#sobre" class="hover:text-teal-500 transition-colors">Sobre o Projeto</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <button id="btnSound" onclick="toggleSound()" class="px-3.5 py-1.5 bg-navy-800 text-gold-400 border border-gold-400/40 text-xs font-title rounded-full shadow hover:bg-navy-900 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-volume-high"></i> <span>Som ON</span>
+        </button>
+        <a href="index.html" class="inline-flex items-center gap-2 bg-gradient-to-r from-gold-500 to-amber-600 hover:from-gold-400 hover:to-amber-500 text-white font-title px-4 py-2 rounded-full text-xs sm:text-sm shadow-md transition-all">
+          <i class="fa-solid fa-house"></i>
+          <span>Início</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APPLICATION CONTENT -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col md:flex-row gap-6">
+
+    <!-- CONTROLS SIDEBAR -->
+    <aside class="w-full md:w-80 lg:w-96 bg-navy-900/90 border border-teal-500/30 rounded-3xl p-5 flex flex-col gap-5 shadow-2xl backdrop-blur-md overflow-y-auto max-h-[calc(100vh-120px)]">
+
+      <!-- Title / Mode Header -->
+      <div class="border-b border-slate-700/60 pb-3">
+        <h2 class="text-xl font-bold font-title text-gold-400 flex items-center gap-2">
+          <i class="fa-solid fa-gear"></i> Espirógrafo Steampunk
+        </h2>
+        <p class="text-xs text-slate-300">Exploração Matemática & Arte Digital do CriaNauta</p>
+      </div>
+
+      <!-- Type Selector: Hipotrocóide vs Epitrocóide -->
+      <div class="grid grid-cols-2 gap-2 bg-navy-800 p-1.5 rounded-2xl border border-teal-500/20">
+        <button id="btnHypo" onclick="setType('hypo')" class="py-2 rounded-xl font-title text-xs sm:text-sm transition bg-gold-500 text-white shadow">
+          <i class="fa-solid fa-circle-dot mr-1"></i> Interior (Hipo)
+        </button>
+        <button id="btnEpi" onclick="setType('epi')" class="py-2 rounded-xl font-title text-xs sm:text-sm transition text-slate-300 hover:bg-navy-900">
+          <i class="fa-solid fa-sun mr-1"></i> Exterior (Epi)
+        </button>
+      </div>
+
+      <!-- Presets -->
+      <div class="space-y-2">
+        <label class="text-xs font-title font-bold text-gold-400 uppercase tracking-wider flex items-center justify-between">
+          <span><i class="fa-solid fa-bookmark"></i> Modelos Rápidos (Presets)</span>
+          <button onclick="randomizeParams()" class="text-[10px] text-teal-400 bg-navy-800 hover:bg-navy-700 px-2 py-0.5 rounded-lg border border-teal-400/30 transition">
+            <i class="fa-solid fa-dice mr-1"></i> Surpresa
+          </button>
+        </label>
+        <div class="grid grid-cols-3 gap-1.5 bg-navy-800 p-2 rounded-2xl border border-teal-500/20 text-xs font-semibold">
+          <button onclick="applyPreset('star')" class="py-1.5 rounded-xl bg-navy-900 text-slate-200 hover:bg-gold-500 hover:text-white transition border border-slate-700 flex items-center justify-center gap-1">⭐ Estrela</button>
+          <button onclick="applyPreset('rose')" class="py-1.5 rounded-xl bg-navy-900 text-slate-200 hover:bg-gold-500 hover:text-white transition border border-slate-700 flex items-center justify-center gap-1">🌹 Rosa</button>
+          <button onclick="applyPreset('mandala')" class="py-1.5 rounded-xl bg-navy-900 text-slate-200 hover:bg-gold-500 hover:text-white transition border border-slate-700 flex items-center justify-center gap-1">☸ Mandala</button>
+          <button onclick="applyPreset('ellipse')" class="py-1.5 rounded-xl bg-navy-900 text-slate-200 hover:bg-gold-500 hover:text-white transition border border-slate-700 flex items-center justify-center gap-1">⭕ Elipse</button>
+          <button onclick="applyPreset('astro')" class="py-1.5 rounded-xl bg-navy-900 text-slate-200 hover:bg-gold-500 hover:text-white transition border border-slate-700 flex items-center justify-center gap-1">✨ Astroide</button>
+          <button onclick="applyPreset('atomic')" class="py-1.5 rounded-xl bg-navy-900 text-slate-200 hover:bg-gold-500 hover:text-white transition border border-slate-700 flex items-center justify-center gap-1">⚛ Atómico</button>
+        </div>
+      </div>
+
+      <!-- Drive Mode: Auto vs Manual -->
+      <div class="space-y-1.5">
+        <label class="text-xs font-title font-bold text-gold-400 uppercase tracking-wider flex items-center gap-1">
+          <i class="fa-solid fa-hand-pointer"></i> Modo de Funcionamento
+        </label>
+        <div class="grid grid-cols-2 gap-2 bg-navy-800 p-1.5 rounded-2xl border border-teal-500/20">
+          <button id="btnModeAuto" onclick="setDriveMode('auto')" class="py-2 rounded-xl font-title text-xs sm:text-sm transition bg-gold-500 text-white shadow">
+            <i class="fa-solid fa-rotate mr-1"></i> Automático
+          </button>
+          <button id="btnModeManual" onclick="setDriveMode('manual')" class="py-2 rounded-xl font-title text-xs sm:text-sm transition text-slate-300 hover:bg-navy-900">
+            <i class="fa-solid fa-hand mr-1"></i> Manual (Rato)
+          </button>
+        </div>
+      </div>
+
+      <!-- Sliders Section -->
+      <div class="space-y-3 bg-navy-800/80 p-3.5 rounded-2xl border border-teal-500/20">
+        <label class="text-xs font-title font-bold text-gold-400 uppercase tracking-wider flex items-center gap-1">
+          <i class="fa-solid fa-sliders"></i> Engrenagens & Raio
+        </label>
+
+        <div>
+          <div class="flex justify-between text-xs font-medium mb-1">
+            <span class="text-slate-200">Raio Exterior (R)</span>
+            <span id="valR" class="bg-navy-900 text-teal-400 px-2 rounded border border-teal-500/30">120</span>
+          </div>
+          <input type="range" id="sliderR" min="40" max="180" value="120" oninput="updateParams()">
+        </div>
+
+        <div>
+          <div class="flex justify-between text-xs font-medium mb-1">
+            <span class="text-slate-200">Raio Engrenagem (r)</span>
+            <span id="valr" class="bg-navy-900 text-teal-400 px-2 rounded border border-teal-500/30">75</span>
+          </div>
+          <input type="range" id="sliderr" min="10" max="140" value="75" oninput="updateParams()">
+        </div>
+
+        <div>
+          <div class="flex justify-between text-xs font-medium mb-1">
+            <span class="text-slate-200">Posição da Caneta (d)</span>
+            <span id="vald" class="bg-navy-900 text-teal-400 px-2 rounded border border-teal-500/30">50</span>
+          </div>
+          <input type="range" id="sliderd" min="0" max="140" value="50" oninput="updateParams()">
+        </div>
+
+        <div id="speedContainer">
+          <div class="flex justify-between text-xs font-medium mb-1">
+            <span class="text-slate-200"><i class="fa-solid fa-bolt"></i> Velocidade</span>
+            <span id="valSpeed" class="bg-navy-900 text-teal-400 px-2 rounded border border-teal-500/30">5x</span>
+          </div>
+          <input type="range" id="sliderSpeed" min="1" max="25" value="5" oninput="updateParams()">
+        </div>
+
+        <div class="flex items-center justify-between text-xs font-medium text-slate-200 pt-1 border-t border-slate-700/50">
+          <span class="flex items-center gap-1"><i class="fa-solid fa-bolt-lightning text-gold-400"></i> Traço Instantâneo</span>
+          <input type="checkbox" id="checkInstant" onchange="updateParams()" class="w-4 h-4 accent-gold-500 rounded cursor-pointer">
+        </div>
+      </div>
+
+      <!-- Styling Section -->
+      <div class="space-y-3 bg-navy-800/80 p-3.5 rounded-2xl border border-teal-500/20">
+        <label class="text-xs font-title font-bold text-gold-400 uppercase tracking-wider flex items-center gap-1">
+          <i class="fa-solid fa-palette"></i> Tinta & Estilo
+        </label>
+
+        <div>
+          <div class="text-xs font-medium text-slate-200 mb-1.5">Cor da Caneta</div>
+          <div class="grid grid-cols-6 gap-2">
+            <button onclick="setStrokeColor('#F59E0B')" class="h-8 rounded-lg bg-[#F59E0B] border-2 border-white/50 shadow hover:scale-105 transition" title="Dourado"></button>
+            <button onclick="setStrokeColor('#38BDF8')" class="h-8 rounded-lg bg-[#38BDF8] border-2 border-white/50 shadow hover:scale-105 transition" title="Turquesa"></button>
+            <button onclick="setStrokeColor('#EF4444')" class="h-8 rounded-lg bg-[#EF4444] border-2 border-white/50 shadow hover:scale-105 transition" title="Vermelho"></button>
+            <button onclick="setStrokeColor('#10B981')" class="h-8 rounded-lg bg-[#10B981] border-2 border-white/50 shadow hover:scale-105 transition" title="Verde"></button>
+            <button onclick="setStrokeColor('#A855F7')" class="h-8 rounded-lg bg-[#A855F7] border-2 border-white/50 shadow hover:scale-105 transition" title="Roxo"></button>
+            <button onclick="setStrokeColor('rainbow')" class="h-8 rounded-lg bg-gradient-to-r from-red-500 via-green-500 to-blue-500 border-2 border-white/50 shadow hover:scale-105 transition flex items-center justify-center text-xs text-white font-bold" title="Arco-Íris">🌈</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between text-xs font-medium mb-1">
+            <span class="text-slate-200"><i class="fa-solid fa-layer-group text-gold-400"></i> Camadas (Efeito 3D)</span>
+            <span id="valLayers" class="bg-navy-900 text-teal-400 px-2 rounded border border-teal-500/30">1</span>
+          </div>
+          <input type="range" id="sliderLayers" min="1" max="5" value="1" step="1" oninput="updateParams()">
+        </div>
+
+        <div>
+          <div class="flex justify-between text-xs font-medium mb-1">
+            <span class="text-slate-200"><i class="fa-solid fa-pen-nib"></i> Espessura do Traço</span>
+            <span id="valWidth" class="bg-navy-900 text-teal-400 px-2 rounded border border-teal-500/30">2px</span>
+          </div>
+          <input type="range" id="sliderWidth" min="0.5" max="8" value="2" step="0.5" oninput="updateParams()">
+        </div>
+
+        <div>
+          <div class="flex justify-between text-xs font-medium mb-1">
+            <span class="text-slate-200"><i class="fa-solid fa-wand-magic-sparkles text-gold-400"></i> Brilho</span>
+            <span id="valGlow" class="bg-navy-900 text-teal-400 px-2 rounded border border-teal-500/30">50%</span>
+          </div>
+          <input type="range" id="sliderGlow" min="0" max="100" value="50" oninput="updateParams()">
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="space-y-2 pt-1">
+        <div class="grid grid-cols-2 gap-2">
+          <button id="btnPlayPause" onclick="togglePlayPause()" class="py-2.5 px-4 bg-gold-500 hover:bg-gold-400 text-white font-title font-bold rounded-2xl shadow-md transition flex items-center justify-center gap-2 text-sm">
+            <i id="playIcon" class="fa-solid fa-pause"></i> <span id="playText">Pausar</span>
+          </button>
+          <button onclick="clearCanvas()" class="py-2.5 px-4 bg-red-800/80 hover:bg-red-700 text-white font-title font-bold rounded-2xl shadow-md transition flex items-center justify-center gap-2 text-sm">
+            <i class="fa-solid fa-trash-can"></i> Limpar
+          </button>
+        </div>
+
+        <button onclick="exportImage()" class="w-full py-2.5 px-4 bg-teal-500 hover:bg-teal-400 text-white font-title font-bold rounded-2xl shadow-md transition flex items-center justify-center gap-2 text-sm">
+          <i class="fa-solid fa-download"></i> Guardar Desenho (PNG)
+        </button>
+      </div>
+
+      <!-- Educational Info Box -->
+      <div class="p-3.5 bg-navy-800/60 rounded-2xl border border-teal-500/30 text-xs text-slate-300 space-y-1.5">
+        <div class="font-title font-bold text-gold-400 flex items-center gap-1.5">
+          <i class="fa-solid fa-graduation-cap"></i> Curiosidade Matemática
+        </div>
+        <div class="flex justify-between">
+          <span>Número de Pétalas:</span>
+          <span id="statPetals" class="font-bold text-teal-400">8</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Voltas para Fechar:</span>
+          <span id="statLaps" class="font-bold text-teal-400">5</span>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- MAIN DISPLAY CANVAS AREA -->
+    <section class="flex-1 flex flex-col items-center justify-center relative">
+      <div id="canvasContainer" class="relative w-full max-w-2xl aspect-square bg-navy-900 rounded-3xl border-4 border-teal-500/30 shadow-2xl overflow-hidden flex items-center justify-center transition-colors">
+        
+        <!-- Grid pattern background -->
+        <div class="absolute inset-0 bg-[radial-gradient(#38BDF8_1px,transparent_1px)] [background-size:24px_24px] opacity-15 pointer-events-none"></div>
+
+        <!-- Main Drawing Canvas -->
+        <canvas id="spiroCanvas" class="w-full h-full block relative z-10 cursor-grab active:cursor-grabbing"></canvas>
+
+        <!-- Manual Drag Instruction Hint -->
+        <div id="manualHint" class="hidden absolute top-4 left-1/2 -translate-x-1/2 z-20 bg-gold-500 text-white font-title text-xs px-4 py-1.5 rounded-full shadow-lg flex items-center gap-2 pointer-events-none animate-pulse">
+          <i class="fa-solid fa-hand-pointer"></i> Arraste em redor do centro para rodar!
+        </div>
+
+        <!-- Gear Overlay Toggle -->
+        <button onclick="toggleGearsOverlay()" class="absolute top-4 right-4 z-20 bg-navy-800/80 hover:bg-navy-800 text-gold-400 text-xs px-3.5 py-1.5 rounded-full border border-teal-500/30 flex items-center gap-1.5 backdrop-blur-sm transition shadow-md">
+          <i class="fa-solid fa-eye"></i> <span id="gearOverlayText">Ocultar Engrenagens</span>
+        </button>
+
+        <!-- Canvas Theme Toggle -->
+        <button id="btnCanvasTheme" onclick="toggleCanvasTheme()" class="absolute top-4 left-4 z-20 bg-navy-800/80 hover:bg-navy-800 text-gold-400 text-xs px-3.5 py-1.5 rounded-full border border-teal-500/30 flex items-center gap-1.5 backdrop-blur-sm transition shadow-md">
+          <i id="themeIcon" class="fa-solid fa-moon text-gold-400"></i> <span id="themeText">Modo Escuro</span>
+        </button>
+
+        <!-- Animated SVG Gear Overlay -->
+        <svg id="gearOverlay" class="absolute inset-0 w-full h-full pointer-events-none z-20 overflow-visible">
+          <circle id="svgFixedRing" cx="50%" cy="50%" r="120" fill="none" stroke="rgba(245, 158, 11, 0.4)" stroke-width="3" stroke-dasharray="6,4"></circle>
+          
+          <g id="svgMovingGear">
+            <circle id="svgGearCircle" cx="0" cy="0" r="75" fill="rgba(56, 189, 248, 0.12)" stroke="#38BDF8" stroke-width="2"></circle>
+            <line id="svgPenArm" x1="0" y1="0" x2="0" y2="0" stroke="#F59E0B" stroke-width="2" stroke-dasharray="3,3"></line>
+            <circle id="svgPenPoint" cx="0" cy="0" r="5" fill="#F59E0B" stroke="#0B253C" stroke-width="1.5"></circle>
+          </g>
+        </svg>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER (Matching index.html) -->
+  <footer id="sobre" class="bg-navy-900 text-slate-300 py-6 border-t border-navy-800 mt-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <img src="logo_CriaNauta_3.png" alt="CriaNauta" class="h-8 w-auto object-contain brightness-200">
+      </div>
+      <p class="text-xs text-slate-400 text-center">Projeto CriaNauta — Recursos Educativos Abertos para o 1.º Ciclo do Ensino Básico.</p>
+      <div class="text-xs text-slate-500">
+        <span>© 2026 CriaNauta</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- APPLICATION LOGIC SCRIPT -->
+  <script>
+    // Audio Synthesizer Setup (Web Audio API)
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playTone(freq, type = 'sine', duration = 0.1) {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        // Fallback for context restrictions
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById('btnSound');
+      if (soundEnabled) {
+        btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> <span>Som ON</span>';
+        playTone(587.33, 'sine', 0.15);
+      } else {
+        btn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i> <span>Som OFF</span>';
+      }
+    }
+
+    // Canvas State & Parameters
+    const canvas = document.getElementById('spiroCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    let isPlaying = true;
+    let driveMode = 'auto'; // 'auto' or 'manual'
+    let isDragging = false;
+    let lastMouseAngle = null;
+
+    let type = 'hypo'; // 'hypo' or 'epi'
+    let R = 120;
+    let r = 75;
+    let d = 50;
+    let speed = 5;
+    let strokeColor = '#F59E0B';
+    let strokeWidth = 2;
+    let glowPercent = 50;
+    let penLayers = 1;
+    let instantMode = false;
+    let showGears = true;
+    let canvasTheme = 'dark'; // 'dark' or 'light'
+
+    let theta = 0;
+    let prevPoints = [];
+    let animId = null;
+    let hue = 0;
+
+    function toggleCanvasTheme() {
+      canvasTheme = canvasTheme === 'dark' ? 'light' : 'dark';
+      const container = document.getElementById('canvasContainer');
+      const btnIcon = document.getElementById('themeIcon');
+      const btnText = document.getElementById('themeText');
+
+      if (canvasTheme === 'dark') {
+        container.style.backgroundColor = '#071828';
+        btnIcon.className = 'fa-solid fa-moon text-gold-400';
+        btnText.innerText = 'Modo Escuro';
+      } else {
+        container.style.backgroundColor = '#FDFBF7';
+        btnIcon.className = 'fa-solid fa-sun text-amber-600';
+        btnText.innerText = 'Modo Claro';
+      }
+
+      playTone(600, 'sine', 0.1);
+    }
+
+    function resizeCanvas() {
+      const container = canvas.parentElement;
+      const rect = container.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      
+      clearCanvas();
+    }
+
+    function setDriveMode(mode) {
+      driveMode = mode;
+      const btnAuto = document.getElementById('btnModeAuto');
+      const btnManual = document.getElementById('btnModeManual');
+      const playBtn = document.getElementById('btnPlayPause');
+      const speedCont = document.getElementById('speedContainer');
+      const hint = document.getElementById('manualHint');
+
+      if (driveMode === 'auto') {
+        btnAuto.className = "py-2 rounded-xl font-title text-xs sm:text-sm transition bg-gold-500 text-white shadow";
+        btnManual.className = "py-2 rounded-xl font-title text-xs sm:text-sm transition text-slate-300 hover:bg-navy-900";
+        playBtn.classList.remove('opacity-50', 'pointer-events-none');
+        speedCont.classList.remove('opacity-40', 'pointer-events-none');
+        hint.classList.add('hidden');
+        isPlaying = true;
+        document.getElementById('playText').innerText = "Pausar";
+        document.getElementById('playIcon').className = "fa-solid fa-pause";
+        drawStep();
+      } else {
+        btnManual.className = "py-2 rounded-xl font-title text-xs sm:text-sm transition bg-gold-500 text-white shadow";
+        btnAuto.className = "py-2 rounded-xl font-title text-xs sm:text-sm transition text-slate-300 hover:bg-navy-900";
+        playBtn.classList.add('opacity-50', 'pointer-events-none');
+        speedCont.classList.add('opacity-40', 'pointer-events-none');
+        hint.classList.remove('hidden');
+        isPlaying = false;
+        cancelAnimationFrame(animId);
+      }
+
+      playTone(523.25, 'sine', 0.1);
+    }
+
+    function updateParams() {
+      R = parseFloat(document.getElementById('sliderR').value);
+      r = parseFloat(document.getElementById('sliderr').value);
+      d = parseFloat(document.getElementById('sliderd').value);
+      speed = parseInt(document.getElementById('sliderSpeed').value);
+      strokeWidth = parseFloat(document.getElementById('sliderWidth').value);
+      glowPercent = parseInt(document.getElementById('sliderGlow').value);
+      penLayers = parseInt(document.getElementById('sliderLayers').value);
+      instantMode = document.getElementById('checkInstant').checked;
+
+      document.getElementById('valR').innerText = R;
+      document.getElementById('valr').innerText = r;
+      document.getElementById('vald').innerText = d;
+      document.getElementById('valSpeed').innerText = speed + 'x';
+      document.getElementById('valWidth').innerText = strokeWidth + 'px';
+      document.getElementById('valGlow').innerText = glowPercent + '%';
+      document.getElementById('valLayers').innerText = penLayers;
+
+      updateStats();
+
+      if (instantMode) {
+        drawInstantFigure();
+      }
+    }
+
+    function applyPreset(preset) {
+      if (preset === 'star') { type = 'hypo'; R = 120; r = 80; d = 60; }
+      else if (preset === 'rose') { type = 'hypo'; R = 140; r = 35; d = 50; }
+      else if (preset === 'mandala') { type = 'epi'; R = 90; r = 30; d = 45; }
+      else if (preset === 'ellipse') { type = 'hypo'; R = 120; r = 60; d = 40; }
+      else if (preset === 'astro') { type = 'hypo'; R = 120; r = 30; d = 30; }
+      else if (preset === 'atomic') { type = 'epi'; R = 70; r = 105; d = 70; }
+
+      document.getElementById('sliderR').value = R;
+      document.getElementById('sliderr').value = r;
+      document.getElementById('sliderd').value = d;
+      setType(type);
+      updateParams();
+      clearCanvas();
+      if (instantMode) drawInstantFigure();
+      playTone(783.99, 'sine', 0.15);
+    }
+
+    function randomizeParams() {
+      type = Math.random() > 0.5 ? 'hypo' : 'epi';
+      R = Math.floor(Math.random() * 80) + 70;
+      r = Math.floor(Math.random() * 60) + 20;
+      d = Math.floor(Math.random() * 80) + 10;
+
+      document.getElementById('sliderR').value = R;
+      document.getElementById('sliderr').value = r;
+      document.getElementById('sliderd').value = d;
+      setType(type);
+      updateParams();
+      clearCanvas();
+      if (instantMode) drawInstantFigure();
+      playTone(880, 'triangle', 0.15);
+    }
+
+    function setType(newType) {
+      type = newType;
+      const btnHypo = document.getElementById('btnHypo');
+      const btnEpi = document.getElementById('btnEpi');
+
+      if (type === 'hypo') {
+        btnHypo.className = "py-2 rounded-xl font-title text-xs sm:text-sm transition bg-gold-500 text-white shadow";
+        btnEpi.className = "py-2 rounded-xl font-title text-xs sm:text-sm transition text-slate-300 hover:bg-navy-900";
+      } else {
+        btnEpi.className = "py-2 rounded-xl font-title text-xs sm:text-sm transition bg-gold-500 text-white shadow";
+        btnHypo.className = "py-2 rounded-xl font-title text-xs sm:text-sm transition text-slate-300 hover:bg-navy-900";
+      }
+
+      playTone(440, 'triangle', 0.1);
+      updateStats();
+    }
+
+    function setStrokeColor(col) {
+      strokeColor = col;
+      playTone(659.25, 'sine', 0.08);
+    }
+
+    function togglePlayPause() {
+      if (driveMode === 'manual') return;
+      isPlaying = !isPlaying;
+      const playBtn = document.getElementById('playText');
+      const playIcon = document.getElementById('playIcon');
+
+      if (isPlaying) {
+        playBtn.innerText = "Pausar";
+        playIcon.className = "fa-solid fa-pause";
+        drawStep();
+      } else {
+        playBtn.innerText = "Continuar";
+        playIcon.className = "fa-solid fa-play";
+        cancelAnimationFrame(animId);
+      }
+    }
+
+    function clearCanvas() {
+      const displayWidth = canvas.width / (window.devicePixelRatio || 1);
+      const displayHeight = canvas.height / (window.devicePixelRatio || 1);
+      ctx.clearRect(0, 0, displayWidth, displayHeight);
+      prevPoints = [];
+      theta = 0;
+      playTone(330, 'sawtooth', 0.15);
+    }
+
+    function toggleGearsOverlay() {
+      showGears = !showGears;
+      const svgOverlay = document.getElementById('gearOverlay');
+      const label = document.getElementById('gearOverlayText');
+
+      if (showGears) {
+        svgOverlay.style.display = 'block';
+        label.innerText = 'Ocultar Engrenagens';
+      } else {
+        svgOverlay.style.display = 'none';
+        label.innerText = 'Mostrar Engrenagens';
+      }
+    }
+
+    function getSpiroPoint(t, dOffset = 0) {
+      const rect = canvas.getBoundingClientRect();
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      let x, y;
+      const effectiveD = d + dOffset;
+
+      if (type === 'hypo') {
+        x = (R - r) * Math.cos(t) + effectiveD * Math.cos(((R - r) * t) / r);
+        y = (R - r) * Math.sin(t) - effectiveD * Math.sin(((R - r) * t) / r);
+      } else {
+        x = (R + r) * Math.cos(t) - effectiveD * Math.cos(((R + r) * t) / r);
+        y = (R + r) * Math.sin(t) - effectiveD * Math.sin(((R + r) * t) / r);
+      }
+
+      return { x: centerX + x, y: centerY + y };
+    }
+
+    function gcd(a, b) {
+      return b === 0 ? a : gcd(b, a % b);
+    }
+
+    function updateStats() {
+      const g = gcd(Math.round(R), Math.round(r));
+      const petals = Math.round(R / g);
+      const laps = Math.round(r / g);
+
+      document.getElementById('statPetals').innerText = petals;
+      document.getElementById('statLaps').innerText = laps;
+    }
+
+    function drawStep() {
+      if (!isPlaying || driveMode === 'manual' || instantMode) return;
+
+      const stepsPerFrame = speed;
+
+      for (let i = 0; i < stepsPerFrame; i++) {
+        advanceDrawing(0.02);
+      }
+
+      if (prevPoints.length > 0) {
+        updateGearOverlay(prevPoints[0]);
+      }
+
+      animId = requestAnimationFrame(drawStep);
+    }
+
+    function drawInstantFigure() {
+      clearCanvas();
+      const g = gcd(Math.round(R), Math.round(r));
+      const totalLaps = Math.round(r / g);
+      const maxTheta = totalLaps * 2 * Math.PI;
+
+      let tempTheta = 0;
+      let tempPrevPoints = [];
+
+      while (tempTheta <= maxTheta) {
+        for (let l = 0; l < penLayers; l++) {
+          const layerOffset = (l - (penLayers - 1) / 2) * 6;
+          const pt = getSpiroPoint(tempTheta, layerOffset);
+
+          if (tempPrevPoints[l]) {
+            ctx.beginPath();
+            ctx.moveTo(tempPrevPoints[l].x, tempPrevPoints[l].y);
+            ctx.lineTo(pt.x, pt.y);
+
+            if (strokeColor === 'rainbow') {
+              ctx.strokeStyle = `hsl(${(tempTheta * 50) % 360}, 90%, 55%)`;
+            } else {
+              ctx.strokeStyle = strokeColor;
+            }
+
+            ctx.lineWidth = strokeWidth;
+            ctx.lineCap = 'round';
+
+            if (glowPercent > 0) {
+              ctx.shadowBlur = (glowPercent / 100) * 12;
+              ctx.shadowColor = ctx.strokeStyle;
+            } else {
+              ctx.shadowBlur = 0;
+            }
+
+            ctx.stroke();
+          }
+          tempPrevPoints[l] = pt;
+        }
+        tempTheta += 0.02;
+      }
+    }
+
+    function advanceDrawing(deltaTheta) {
+      theta += deltaTheta;
+
+      for (let l = 0; l < penLayers; l++) {
+        const layerOffset = (l - (penLayers - 1) / 2) * 6;
+        const pt = getSpiroPoint(theta, layerOffset);
+
+        if (prevPoints[l]) {
+          ctx.beginPath();
+          ctx.moveTo(prevPoints[l].x, prevPoints[l].y);
+          ctx.lineTo(pt.x, pt.y);
+
+          if (strokeColor === 'rainbow') {
+            hue = (hue + 0.5) % 360;
+            ctx.strokeStyle = `hsl(${hue}, 90%, 55%)`;
+          } else {
+            ctx.strokeStyle = strokeColor;
+          }
+
+          ctx.lineWidth = strokeWidth;
+          ctx.lineCap = 'round';
+
+          if (glowPercent > 0) {
+            ctx.shadowBlur = (glowPercent / 100) * 12;
+            ctx.shadowColor = ctx.strokeStyle;
+          } else {
+            ctx.shadowBlur = 0;
+          }
+
+          ctx.stroke();
+        }
+
+        prevPoints[l] = pt;
+      }
+    }
+
+    function getPointerPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    function handlePointerStart(e) {
+      if (driveMode !== 'manual') return;
+      isDragging = true;
+      const pos = getPointerPos(e);
+      const centerX = canvas.width / (2 * (window.devicePixelRatio || 1));
+      const centerY = canvas.height / (2 * (window.devicePixelRatio || 1));
+      
+      lastMouseAngle = Math.atan2(pos.y - centerY, pos.x - centerX);
+      playTone(440, 'triangle', 0.05);
+    }
+
+    function handlePointerMove(e) {
+      if (driveMode !== 'manual' || !isDragging) return;
+      
+      const pos = getPointerPos(e);
+      const centerX = canvas.width / (2 * (window.devicePixelRatio || 1));
+      const centerY = canvas.height / (2 * (window.devicePixelRatio || 1));
+      const currentAngle = Math.atan2(pos.y - centerY, pos.x - centerX);
+
+      if (lastMouseAngle !== null) {
+        let deltaAngle = currentAngle - lastMouseAngle;
+
+        if (deltaAngle > Math.PI) deltaAngle -= Math.PI * 2;
+        if (deltaAngle < -Math.PI) deltaAngle += Math.PI * 2;
+
+        advanceDrawing(deltaAngle);
+        if (prevPoints.length > 0) updateGearOverlay(prevPoints[0]);
+
+        if (Math.abs(deltaAngle) > 0.05) {
+          playTone(200 + Math.abs(deltaAngle) * 500, 'sine', 0.02);
+        }
+      }
+
+      lastMouseAngle = currentAngle;
+    }
+
+    function handlePointerEnd() {
+      if (driveMode !== 'manual') return;
+      isDragging = false;
+      lastMouseAngle = null;
+    }
+
+    canvas.addEventListener('mousedown', handlePointerStart);
+    window.addEventListener('mousemove', handlePointerMove);
+    window.addEventListener('mouseup', handlePointerEnd);
+
+    canvas.addEventListener('touchstart', (e) => { handlePointerStart(e); e.preventDefault(); }, { passive: false });
+    window.addEventListener('touchmove', (e) => { handlePointerMove(e); }, { passive: true });
+    window.addEventListener('touchend', handlePointerEnd);
+
+    function updateGearOverlay(pt) {
+      if (!showGears || !pt) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      let gearCenterX, gearCenterY;
+      if (type === 'hypo') {
+        gearCenterX = centerX + (R - r) * Math.cos(theta);
+        gearCenterY = centerY + (R - r) * Math.sin(theta);
+      } else {
+        gearCenterX = centerX + (R + r) * Math.cos(theta);
+        gearCenterY = centerY + (R + r) * Math.sin(theta);
+      }
+
+      const fixedCircle = document.getElementById('svgFixedRing');
+      fixedCircle.setAttribute('r', R);
+
+      const movingGroup = document.getElementById('svgMovingGear');
+      movingGroup.setAttribute('transform', `translate(${gearCenterX}, ${gearCenterY})`);
+
+      const gearCircle = document.getElementById('svgGearCircle');
+      gearCircle.setAttribute('r', r);
+
+      const penArm = document.getElementById('svgPenArm');
+      penArm.setAttribute('x2', pt.x - gearCenterX);
+      penArm.setAttribute('y2', pt.y - gearCenterY);
+
+      const penPoint = document.getElementById('svgPenPoint');
+      penPoint.setAttribute('cx', pt.x - gearCenterX);
+      penPoint.setAttribute('cy', pt.y - gearCenterY);
+    }
+
+    function exportImage() {
+      const expCanvas = document.createElement('canvas');
+      expCanvas.width = canvas.width;
+      expCanvas.height = canvas.height;
+      const expCtx = expCanvas.getContext('2d');
+
+      expCtx.fillStyle = canvasTheme === 'dark' ? '#071828' : '#FDFBF7';
+      expCtx.fillRect(0, 0, expCanvas.width, expCanvas.height);
+
+      expCtx.drawImage(canvas, 0, 0);
+
+      const dpr = window.devicePixelRatio || 1;
+      expCtx.font = `bold ${16 * dpr}px 'Fredoka', sans-serif`;
+      expCtx.fillStyle = canvasTheme === 'dark' ? '#F59E0B' : '#0B253C';
+      expCtx.fillText('CriaNauta • Espirógrafo Digital', 20 * dpr, expCanvas.height - (20 * dpr));
+
+      const link = document.createElement('a');
+      link.download = `CriaNauta_Espirografo_${Date.now()}.png`;
+      link.href = expCanvas.toDataURL('image/png');
+      link.click();
+
+      playTone(880, 'sine', 0.2);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+
+    window.onload = function() {
+      resizeCanvas();
+      updateParams();
+      drawStep();
+    };
+  </script>
+</body>
+</html>

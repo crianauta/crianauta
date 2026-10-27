@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0B253C">
+  <title>Oficina de Desenho Digital — CriaNauta</title>
+  
+  <!-- Google Fonts: Fredoka & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              800: '#0B253C',
+              900: '#071828'
+            },
+            teal: {
+              400: '#38BDF8',
+              500: '#0EA5E9'
+            },
+            gold: {
+              400: '#F59E0B',
+              500: '#D97706'
+            },
+            cream: '#FDFBF7'
+          },
+          fontFamily: {
+            title: ['Fredoka', 'sans-serif'],
+            body: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #FDFBF7;
+      color: #0B253C;
+    }
+    h1, h2, h3, h4, .font-title {
+      font-family: 'Fredoka', sans-serif;
+    }
+
+    /* Range input custom styling */
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: #E2E8F0;
+      height: 6px;
+      border-radius: 3px;
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #0EA5E9;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-teal-500 selection:text-white">
+
+  <!-- HEADER / NAVIGATION IDENTICAL TO LANDING & SPIROGRAPH -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <img src="logo_CriaNauta_3.png" alt="Logótipo CriaNauta" class="h-12 w-auto object-contain transition-transform group-hover:scale-105">
+      </a>
+      
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-title px-4 py-2 rounded-full text-sm transition-all border border-slate-200">
+          <i class="fa-solid fa-arrow-left text-xs"></i>
+          <span>Voltar ao Início</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col gap-6">
+
+    <!-- INTRO & MODE SWITCH -->
+    <section class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+      <div>
+        <span class="inline-block px-2.5 py-0.5 bg-teal-500/10 text-teal-600 text-xs font-bold rounded mb-1">ARTEFACTO PEDAGÓGICO</span>
+        <h1 class="text-2xl sm:text-3xl font-bold text-navy-800">Oficina de Desenho Digital</h1>
+        <p class="text-slate-600 text-sm">Experimenta ferramentas, aprende novas técnicas e dá forma às tuas ideias.</p>
+      </div>
+
+      <!-- Mode Switcher -->
+      <div class="flex items-center bg-slate-100 p-1.5 rounded-xl border border-slate-200/60 font-title text-xs sm:text-sm">
+        <button id="modeFree" onclick="setAppMode('free')" class="px-3 py-2 rounded-lg font-bold bg-navy-800 text-white shadow-sm transition-all">Desenho Livre</button>
+        <button id="modeLearn" onclick="setAppMode('learn')" class="px-3 py-2 rounded-lg font-bold text-slate-600 hover:text-navy-800 transition-all">Aprender</button>
+        <button id="modeChallenge" onclick="setAppMode('challenge')" class="px-3 py-2 rounded-lg font-bold text-slate-600 hover:text-navy-800 transition-all">Desafios</button>
+      </div>
+    </section>
+
+    <!-- WORKSPACE (TOOLPANEL + CANVAS + SIDE PANEL) -->
+    <div class="grid lg:grid-cols-12 gap-6 items-start">
+
+      <!-- TOOLS PANEL -->
+      <aside class="lg:col-span-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-5">
+        <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+          <h2 class="font-title font-bold text-navy-800 text-lg">Ferramentas</h2>
+          <span class="text-xs bg-sky-100 text-sky-800 font-semibold px-2 py-0.5 rounded">1 · Desenha</span>
+        </div>
+
+        <!-- Tool Grid -->
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="setTool('pencil')" data-tool="pencil" class="tool-btn flex flex-col items-center justify-center p-2.5 rounded-xl border border-teal-500 bg-teal-50 text-teal-700 font-medium text-xs gap-1 transition-all">
+            <i class="fa-solid fa-pencil text-base"></i><span>Lápis</span>
+          </button>
+          <button onclick="setTool('brush')" data-tool="brush" class="tool-btn flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-600 font-medium text-xs gap-1 transition-all">
+            <i class="fa-solid fa-paint-brush text-base"></i><span>Pincel</span>
+          </button>
+          <button onclick="setTool('eraser')" data-tool="eraser" class="tool-btn flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-600 font-medium text-xs gap-1 transition-all">
+            <i class="fa-solid fa-eraser text-base"></i><span>Borracha</span>
+          </button>
+          <button onclick="setTool('line')" data-tool="line" class="tool-btn flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-600 font-medium text-xs gap-1 transition-all">
+            <i class="fa-solid fa-slash text-base"></i><span>Linha</span>
+          </button>
+          <button onclick="setTool('rect')" data-tool="rect" class="tool-btn flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-600 font-medium text-xs gap-1 transition-all">
+            <i class="fa-regular fa-square text-base"></i><span>Retângulo</span>
+          </button>
+          <button onclick="setTool('ellipse')" data-tool="ellipse" class="tool-btn flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-600 font-medium text-xs gap-1 transition-all">
+            <i class="fa-regular fa-circle text-base"></i><span>Elipse</span>
+          </button>
+        </div>
+
+        <!-- Color Selection -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Cor do Traço</label>
+          <div class="flex items-center gap-2">
+            <input type="color" id="colorInput" value="#0B253C" class="w-10 h-10 rounded-lg border border-slate-300 cursor-pointer p-0.5">
+            <div class="flex flex-wrap gap-1.5 flex-1">
+              <button onclick="setColor('#0B253C')" class="w-6 h-6 rounded-full bg-[#0B253C] border border-slate-300 hover:scale-110 transition-transform"></button>
+              <button onclick="setColor('#0EA5E9')" class="w-6 h-6 rounded-full bg-[#0EA5E9] border border-slate-300 hover:scale-110 transition-transform"></button>
+              <button onclick="setColor('#FF795F')" class="w-6 h-6 rounded-full bg-[#FF795F] border border-slate-300 hover:scale-110 transition-transform"></button>
+              <button onclick="setColor('#F59E0B')" class="w-6 h-6 rounded-full bg-[#F59E0B] border border-slate-300 hover:scale-110 transition-transform"></button>
+              <button onclick="setColor('#20252B')" class="w-6 h-6 rounded-full bg-[#20252B] border border-slate-300 hover:scale-110 transition-transform"></button>
+              <button onclick="setColor('#FFFFFF')" class="w-6 h-6 rounded-full bg-[#FFFFFF] border border-slate-300 hover:scale-110 transition-transform"></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stroke Thickness -->
+        <div class="space-y-1.5">
+          <div class="flex justify-between text-xs font-medium text-slate-600">
+            <span>Espessura</span>
+            <span id="sizeVal" class="font-bold text-navy-800">5 px</span>
+          </div>
+          <input type="range" id="sizeInput" min="1" max="40" value="5" oninput="updateSize(this.value)">
+        </div>
+
+        <!-- Canvas Aspect Ratio -->
+        <div class="space-y-1.5">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Formato da Tela</label>
+          <select id="ratioSelect" onchange="changeRatio(this.value)" class="w-full text-xs font-medium bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-700 outline-none focus:border-teal-500">
+            <option value="landscape">Paisagem (1000 × 650)</option>
+            <option value="square">Quadrado (800 × 800)</option>
+            <option value="portrait">Retrato (650 × 900)</option>
+          </select>
+        </div>
+
+        <!-- Undo / Redo / Clear Actions -->
+        <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
+          <div class="grid grid-cols-2 gap-2">
+            <button id="btnUndo" onclick="undo()" disabled class="py-2 px-3 bg-slate-100 disabled:opacity-40 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1">
+              <i class="fa-solid fa-rotate-left"></i> Desfazer
+            </button>
+            <button id="btnRedo" onclick="redo()" disabled class="py-2 px-3 bg-slate-100 disabled:opacity-40 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1">
+              <i class="fa-solid fa-rotate-right"></i> Refazer
+            </button>
+          </div>
+          <button onclick="clearCanvas()" class="py-2 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-all">
+            <i class="fa-solid fa-trash-can mr-1"></i> Limpar Desenho
+          </button>
+        </div>
+      </aside>
+
+      <!-- CANVAS PANEL -->
+      <section class="lg:col-span-6 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-title font-bold text-navy-800 text-lg">A tua Tela</h2>
+            <p id="canvasHint" class="text-xs text-slate-500">Escolhe uma ferramenta e começa a desenhar.</p>
+          </div>
+          <button onclick="exportPNG()" class="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold font-title px-4 py-2 rounded-xl shadow transition-all">
+            <i class="fa-solid fa-download"></i> Exportar PNG
+          </button>
+        </div>
+
+        <!-- Canvas Wrap Frame -->
+        <div class="relative w-full aspect-[1000/650] bg-slate-100 border border-slate-200 rounded-xl overflow-hidden flex items-center justify-center shadow-inner">
+          <canvas id="drawingCanvas" class="w-full h-full block bg-white cursor-crosshair"></canvas>
+          
+          <!-- Empty State Overlay -->
+          <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center pointer-events-none transition-opacity">
+            <i class="fa-solid fa-wand-magic-sparkles text-3xl text-teal-400 mb-2"></i>
+            <strong class="font-title text-navy-800 text-base">Este espaço é teu.</strong>
+            <span class="text-xs text-slate-500 mt-0.5">Começa com uma linha, uma forma ou uma ideia.</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-slate-400 font-medium pt-1">
+          <span id="saveStatus"><i class="fa-solid fa-floppy-disk text-teal-500 mr-1"></i> Guardado neste navegador.</span>
+          <span id="sizeLabel">1000 × 650</span>
+        </div>
+      </section>
+
+      <!-- SIDE PANEL (INSPIRATION / LESSONS / CHALLENGES) -->
+      <aside class="lg:col-span-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-4">
+        <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+          <h2 id="sideTitle" class="font-title font-bold text-navy-800 text-lg">Inspiração Rápida</h2>
+          <span class="text-xs bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded">2 · Explora</span>
+        </div>
+
+        <div id="sideContent" class="space-y-4">
+          <!-- Populated by JavaScript -->
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- FOOTER IDENTICAL TO LANDING -->
+  <footer class="bg-navy-900 text-slate-300 py-8 border-t border-navy-800 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <img src="logo_CriaNauta_3.png" alt="CriaNauta" class="h-8 w-auto object-contain brightness-200">
+      </div>
+      <p class="text-xs text-slate-400 text-center">CriaNauta · Artefactos pedagógicos para explorar e aprender no 1.º Ciclo do Ensino Básico.</p>
+      <div class="text-xs text-slate-500">
+        <span>© 2026 CriaNauta</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT ENGINE -->
+  <script>
+    // APP CONTENT DATA
+    const CONTENT = {
+      lessons: [
+        { id: "shapes", number: "01", title: "Constrói com formas", level: "Inicial", description: "Tudo pode começar com círculos, quadrados e triângulos. Junta formas para inventar um objeto.", steps: ["Escolhe a ferramenta Elipse e desenha um círculo grande.", "Acrescenta um retângulo ou triângulo com outra ferramenta.", "Adiciona três detalhes que tornem a tua criação única."] },
+        { id: "lines", number: "02", title: "Linhas com intenção", level: "Inicial", description: "Experimenta linhas retas, curvas e quebradas para sugerir movimento.", steps: ["Escolhe o Lápis e desenha cinco linhas diferentes.", "Muda a espessura para comparar linhas leves e fortes.", "Transforma duas linhas numa pequena personagem ou paisagem."] },
+        { id: "overlap", number: "03", title: "Criar profundidade", level: "Intermédio", description: "A sobreposição ajuda a mostrar o que está perto e o que está mais longe.", steps: ["Desenha uma forma grande.", "Desenha uma segunda forma parcialmente por cima da primeira.", "Acrescenta detalhes para tornar a cena mais clara."] },
+        { id: "shadow", number: "04", title: "Luz e sombra", level: "Avançado", description: "A sombra ajuda a sugerir volume e a posição de uma fonte de luz.", steps: ["Desenha uma esfera com a ferramenta Elipse.", "Escolhe uma cor mais escura e acrescenta uma sombra lateral.", "Imagina de onde vem a luz e deixa essa zona mais clara."] }
+      ],
+      challenges: [
+        { id: "planet", title: "Inventa um planeta", level: "Inicial", time: "5 min", description: "Desenha um planeta com três detalhes inesperados: anéis, cidades flutuantes, oceanos quadrados ou algo totalmente teu." },
+        { id: "creature", title: "Criatura improvável", level: "Intermédio", time: "10 min", description: "Combina três formas diferentes para criar uma criatura. Dá-lhe uma característica que ninguém esperaria." },
+        { id: "city", title: "Cidade do futuro", level: "Avançado", time: "15 min", description: "Desenha uma cidade com edifícios de alturas diferentes, um ponto de fuga imaginário e um meio de transporte original." }
+      ]
+    };
+
+    // CANVAS STATE & CONTROLS
+    const canvas = document.getElementById("drawingCanvas");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    const emptyState = document.getElementById("emptyState");
+    const STORAGE_KEY = "criana_uta_drawing_v1";
+
+    let tool = "pencil";
+    let color = "#0B253C";
+    let size = 5;
+    let isDrawing = false;
+    let startPoint = null;
+    let lastPoint = null;
+    let snapshot = null;
+    let history = [];
+    let historyIndex = -1;
+    let hasDrawing = false;
+
+    // Set white canvas background
+    function setWhiteBg() {
+      ctx.save();
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.restore();
+    }
+
+    // Set Canvas Dimensions
+    function initCanvas(ratio = "landscape") {
+      let w = 1000, h = 650;
+      if (ratio === "square") { w = 800; h = 800; }
+      if (ratio === "portrait") { w = 650; h = 900; }
+
+      canvas.width = w;
+      canvas.height = h;
+      setWhiteBg();
+      hasDrawing = false;
+      history = [];
+      historyIndex = -1;
+      saveState();
+      document.getElementById("sizeLabel").innerText = `${w} × ${h}`;
+      updateEmpty();
+    }
+
+    function updateEmpty() {
+      emptyState.style.opacity = hasDrawing ? "0" : "1";
+    }
+
+    function saveState() {
+      history = history.slice(0, historyIndex + 1);
+      history.push(canvas.toDataURL());
+      if (history.length > 30) history.shift();
+      historyIndex = history.length - 1;
+
+      document.getElementById("btnUndo").disabled = historyIndex <= 0;
+      document.getElementById("btnRedo").disabled = historyIndex >= history.length - 1;
+
+      try {
+        localStorage.setItem(STORAGE_KEY, canvas.toDataURL());
+      } catch (e) {}
+    }
+
+    function undo() {
+      if (historyIndex > 0) {
+        historyIndex--;
+        loadState(history[historyIndex]);
+      }
+    }
+
+    function redo() {
+      if (historyIndex < history.length - 1) {
+        historyIndex++;
+        loadState(history[historyIndex]);
+      }
+    }
+
+    function loadState(dataUrl) {
+      const img = new Image();
+      img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+        document.getElementById("btnUndo").disabled = historyIndex <= 0;
+        document.getElementById("btnRedo").disabled = historyIndex >= history.length - 1;
+      };
+      img.src = dataUrl;
+    }
+
+    function setTool(newTool) {
+      tool = newTool;
+      document.querySelectorAll(".tool-btn").forEach(btn => {
+        if (btn.dataset.tool === newTool) {
+          btn.className = "tool-btn flex flex-col items-center justify-center p-2.5 rounded-xl border border-teal-500 bg-teal-50 text-teal-700 font-medium text-xs gap-1 transition-all";
+        } else {
+          btn.className = "tool-btn flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-600 font-medium text-xs gap-1 transition-all";
+        }
+      });
+    }
+
+    function setColor(newColor) {
+      color = newColor;
+      document.getElementById("colorInput").value = newColor;
+    }
+
+    function updateSize(newSize) {
+      size = Number(newSize);
+      document.getElementById("sizeVal").innerText = `${size} px`;
+    }
+
+    function clearCanvas() {
+      if (confirm("Tens a certeza que queres limpar todo o desenho?")) {
+        setWhiteBg();
+        hasDrawing = false;
+        updateEmpty();
+        saveState();
+      }
+    }
+
+    function changeRatio(ratio) {
+      if (confirm("Alterar o formato apaga o desenho atual. Queres continuar?")) {
+        initCanvas(ratio);
+      }
+    }
+
+    function exportPNG() {
+      const link = document.createElement("a");
+      link.download = `CriaNauta_Desenho_${Date.now()}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
+
+    // DRAWING PHYSICS
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: (clientX - rect.left) * (canvas.width / rect.width),
+        y: (clientY - rect.top) * (canvas.height / rect.height)
+      };
+    }
+
+    function applyStroke() {
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.lineWidth = tool === "eraser" ? size * 2.5 : size;
+      ctx.strokeStyle = tool === "eraser" ? "#FFFFFF" : color;
+      ctx.fillStyle = tool === "eraser" ? "#FFFFFF" : color;
+    }
+
+    function startDraw(e) {
+      isDrawing = true;
+      startPoint = getPos(e);
+      lastPoint = startPoint;
+      hasDrawing = true;
+      updateEmpty();
+
+      if (["line", "rect", "ellipse"].includes(tool)) {
+        snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      } else {
+        applyStroke();
+        ctx.beginPath();
+        ctx.moveTo(startPoint.x, startPoint.y);
+        ctx.lineTo(startPoint.x + 0.1, startPoint.y + 0.1);
+        ctx.stroke();
+      }
+    }
+
+    function moveDraw(e) {
+      if (!isDrawing) return;
+      const pt = getPos(e);
+
+      if (["line", "rect", "ellipse"].includes(tool)) {
+        if (!snapshot) return;
+        ctx.putImageData(snapshot, 0, 0);
+        applyStroke();
+        ctx.beginPath();
+        if (tool === "line") {
+          ctx.moveTo(startPoint.x, startPoint.y);
+          ctx.lineTo(pt.x, pt.y);
+        } else if (tool === "rect") {
+          ctx.strokeRect(startPoint.x, startPoint.y, pt.x - startPoint.x, pt.y - startPoint.y);
+        } else if (tool === "ellipse") {
+          const rx = Math.abs(pt.x - startPoint.x) / 2;
+          const ry = Math.abs(pt.y - startPoint.y) / 2;
+          ctx.ellipse((pt.x + startPoint.x) / 2, (pt.y + startPoint.y) / 2, Math.max(rx, 0.5), Math.max(ry, 0.5), 0, 0, Math.PI * 2);
+        }
+        ctx.stroke();
+      } else {
+        applyStroke();
+        ctx.beginPath();
+        ctx.moveTo(lastPoint.x, lastPoint.y);
+        ctx.lineTo(pt.x, pt.y);
+        ctx.stroke();
+        lastPoint = pt;
+      }
+    }
+
+    function endDraw() {
+      if (isDrawing) {
+        isDrawing = false;
+        snapshot = null;
+        saveState();
+      }
+    }
+
+    canvas.addEventListener("mousedown", startDraw);
+    window.addEventListener("mousemove", moveDraw);
+    window.addEventListener("mouseup", endDraw);
+
+    canvas.addEventListener("touchstart", (e) => { startDraw(e); e.preventDefault(); }, { passive: false });
+    window.addEventListener("touchmove", (e) => { moveDraw(e); }, { passive: true });
+    window.addEventListener("touchend", endDraw);
+
+    // MODE RENDERERS
+    function setAppMode(mode) {
+      document.getElementById("modeFree").className = mode === "free" ? "px-3 py-2 rounded-lg font-bold bg-navy-800 text-white shadow-sm transition-all" : "px-3 py-2 rounded-lg font-bold text-slate-600 hover:text-navy-800 transition-all";
+      document.getElementById("modeLearn").className = mode === "learn" ? "px-3 py-2 rounded-lg font-bold bg-navy-800 text-white shadow-sm transition-all" : "px-3 py-2 rounded-lg font-bold text-slate-600 hover:text-navy-800 transition-all";
+      document.getElementById("modeChallenge").className = mode === "challenge" ? "px-3 py-2 rounded-lg font-bold bg-navy-800 text-white shadow-sm transition-all" : "px-3 py-2 rounded-lg font-bold text-slate-600 hover:text-navy-800 transition-all";
+
+      const sideTitle = document.getElementById("sideTitle");
+      const sideContent = document.getElementById("sideContent");
+
+      if (mode === "free") {
+        sideTitle.innerText = "Inspiração Rápida";
+        sideContent.innerHTML = `
+          <div class="p-4 bg-sky-50 rounded-xl border border-sky-100 space-y-2">
+            <span class="text-teal-500 font-bold">✦ Formas Básicas</span>
+            <h3 class="font-title font-bold text-navy-800 text-base">Começa pelas formas</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">Um círculo pode ser uma cara, uma lua ou a janela de uma nave. Que mais pode ser?</p>
+          </div>
+          <div class="p-4 bg-amber-50 rounded-xl border border-amber-100 space-y-2">
+            <span class="text-amber-600 text-xs font-bold uppercase">DESAFIO DE 5 MIN</span>
+            <h3 class="font-title font-bold text-navy-800 text-base">Inventa um planeta</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">Desenha um planeta com três detalhes inesperados.</p>
+            <button onclick="setAppMode('challenge')" class="text-xs font-bold text-amber-600 hover:underline flex items-center gap-1 pt-1">Experimentar <i class="fa-solid fa-arrow-right text-[10px]"></i></button>
+          </div>
+        `;
+      } else if (mode === "learn") {
+        sideTitle.innerText = "Pequenas Lições";
+        sideContent.innerHTML = CONTENT.lessons.map(l => `
+          <div class="p-3 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200/80 transition-all space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-teal-600">Lição ${l.number}</span>
+              <span class="text-[10px] bg-slate-200 text-slate-700 font-semibold px-2 py-0.5 rounded">${l.level}</span>
+            </div>
+            <h3 class="font-title font-bold text-navy-800 text-sm">${l.title}</h3>
+            <p class="text-xs text-slate-500 line-clamp-2">${l.description}</p>
+          </div>
+        `).join('');
+      } else if (mode === "challenge") {
+        sideTitle.innerText = "Desafios Criativos";
+        sideContent.innerHTML = CONTENT.challenges.map(c => `
+          <div class="p-3.5 bg-amber-50/50 rounded-xl border border-amber-200/60 space-y-1.5">
+            <div class="flex items-center justify-between text-[10px] font-bold text-amber-700">
+              <span>${c.level}</span>
+              <span><i class="fa-regular fa-clock"></i> ${c.time}</span>
+            </div>
+            <h3 class="font-title font-bold text-navy-800 text-sm">${c.title}</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">${c.description}</p>
+          </div>
+        `).join('');
+      }
+    }
+
+    // INITIALIZATION
+    window.onload = function() {
+      initCanvas("landscape");
+      setAppMode("free");
+    };
+  </script>
+</body>
+</html>
