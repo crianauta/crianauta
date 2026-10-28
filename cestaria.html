@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="favicon_CriaNauta.png">
+  <title>Oficina de Cestaria e Tramas — CriaNauta</title>
+  
+  <!-- Google Fonts: Fredoka & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { 800: '#0B253C', 900: '#071828' },
+            earth: { 800: '#5C4033', 900: '#3D2817' },
+            paper: '#FDFBF7'
+          },
+          fontFamily: {
+            title: ['Fredoka', 'sans-serif'],
+            body: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #FDFBF7; color: #0B253C; }
+    h1, h2, h3, h4, .font-title { font-family: 'Fredoka', sans-serif; }
+    .basket-stage {
+      background-color: #F4EAD2;
+      background-image: radial-gradient(#D5C5A5 1.5px, transparent 1.5px);
+      background-size: 20px 20px;
+    }
+    .color-card.selected { border-color: #B45309; box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.4); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-amber-600 selection:text-white">
+
+  <!-- CABEÇALHO / NAVEGAÇÃO -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <img src="logo_CriaNauta_3.png" alt="Logótipo CriaNauta" class="h-12 w-auto object-contain transition-transform group-hover:scale-105" onerror="this.src='logo_CriaNauta_2.png'">
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-title px-4 py-2 rounded-full text-sm transition-all border border-slate-200">
+          <i class="fa-solid fa-arrow-left text-xs"></i>
+          <span>Voltar ao Início</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col gap-6">
+
+    <!-- HERO INTRO -->
+    <section class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+      <div>
+        <span class="inline-block px-2.5 py-0.5 bg-amber-500/10 text-amber-700 text-xs font-bold rounded mb-1">ARTEFACTO ARTESANAL & TRAMAS</span>
+        <h1 class="text-2xl sm:text-3xl font-bold text-navy-800">Oficina de Cestaria e Tramas</h1>
+        <p class="text-slate-600 text-sm">Cria padrões geométricos circulares inspirados na cestaria tradicional de Cabo Verde com cores e fibras naturais.</p>
+      </div>
+
+      <!-- Presets -->
+      <div class="flex items-center gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200 flex-wrap">
+        <span class="text-xs font-bold text-navy-800 px-2 font-title">Padrões:</span>
+        <button onclick="loadPreset('radial')" class="px-2.5 py-1.5 bg-white hover:bg-amber-50 text-slate-700 hover:text-amber-700 border border-slate-200 rounded-lg text-xs font-semibold transition-all">🌀 Rosácea de Vime</button>
+        <button onclick="loadPreset('geo')" class="px-2.5 py-1.5 bg-white hover:bg-amber-50 text-slate-700 hover:text-amber-700 border border-slate-200 rounded-lg text-xs font-semibold transition-all">🔶 Trança Ilha</button>
+      </div>
+    </section>
+
+    <!-- WORKSPACE -->
+    <div class="grid lg:grid-cols-12 gap-6 items-start">
+
+      <!-- CONTROLS PANEL -->
+      <aside class="lg:col-span-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-5">
+        <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+          <h2 class="font-title font-bold text-navy-800 text-lg">Fibras & Cores</h2>
+          <span class="text-xs bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded">Artesão</span>
+        </div>
+
+        <!-- UNDO / REDO -->
+        <div class="flex items-center justify-between gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200">
+          <button onclick="undo()" id="undoBtn" class="flex-1 py-1.5 px-2 bg-white hover:bg-slate-100 disabled:opacity-40 text-slate-700 rounded-lg text-xs font-bold border border-slate-200 flex items-center justify-center gap-1.5 transition-all">
+            <i class="fa-solid fa-rotate-left"></i> Desfazer
+          </button>
+          <button onclick="redo()" id="redoBtn" class="flex-1 py-1.5 px-2 bg-white hover:bg-slate-100 disabled:opacity-40 text-slate-700 rounded-lg text-xs font-bold border border-slate-200 flex items-center justify-center gap-1.5 transition-all">
+            <i class="fa-solid fa-rotate-right"></i> Refazer
+          </button>
+        </div>
+
+        <!-- FIBER COLORS (EXPANDED TRADITIONAL PALETTE) -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Fibras e Pigmentos Tradicionais</label>
+          <div class="grid grid-cols-4 gap-2">
+            <!-- Palha Crua -->
+            <button onclick="setColor('#E6CCB2')" id="colCrua" class="color-card selected flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-[#E6CCB2] text-slate-800 transition-all">
+              <span class="w-6 h-6 rounded-md bg-[#E6CCB2] shadow-inner border border-slate-300"></span>
+              <span class="text-[9px] font-bold mt-1">Crua</span>
+            </button>
+            <!-- Palha Clara -->
+            <button onclick="setColor('#D4A373')" id="colNatural" class="color-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-[#D4A373] text-white transition-all">
+              <span class="w-6 h-6 rounded-md bg-[#D4A373] shadow-inner border border-slate-400"></span>
+              <span class="text-[9px] font-bold mt-1">Palha</span>
+            </button>
+            <!-- Vime -->
+            <button onclick="setColor('#8D6E63')" id="colVime" class="color-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-[#8D6E63] text-white transition-all">
+              <span class="w-6 h-6 rounded-md bg-[#8D6E63] shadow-inner border border-slate-400"></span>
+              <span class="text-[9px] font-bold mt-1">Vime</span>
+            </button>
+            <!-- Castanho Terra -->
+            <button onclick="setColor('#5C4033')" id="colEarth" class="color-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-[#5C4033] text-white transition-all">
+              <span class="w-6 h-6 rounded-md bg-[#5C4033] shadow-inner border border-slate-400"></span>
+              <span class="text-[9px] font-bold mt-1">Terra</span>
+            </button>
+            <!-- Preto Canas -->
+            <button onclick="setColor('#2B2D42')" id="colBlack" class="color-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-[#2B2D42] text-white transition-all">
+              <span class="w-6 h-6 rounded-md bg-[#2B2D42] shadow-inner border border-slate-400"></span>
+              <span class="text-[9px] font-bold mt-1">Canas</span>
+            </button>
+            <!-- Azul Oceano -->
+            <button onclick="setColor('#0284C7')" id="colBlue" class="color-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-[#0284C7] text-white transition-all">
+              <span class="w-6 h-6 rounded-md bg-[#0284C7] shadow-inner border border-slate-400"></span>
+              <span class="text-[9px] font-bold mt-1">Oceano</span>
+            </button>
+            <!-- Amarelo Milho -->
+            <button onclick="setColor('#EAB308')" id="colYellow" class="color-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-[#EAB308] text-white transition-all">
+              <span class="w-6 h-6 rounded-md bg-[#EAB308] shadow-inner border border-slate-400"></span>
+              <span class="text-[9px] font-bold mt-1">Milho</span>
+            </button>
+            <!-- Vermelho Goivos -->
+            <button onclick="setColor('#B91C1C')" id="colRed" class="color-card flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-[#B91C1C] text-white transition-all">
+              <span class="w-6 h-6 rounded-md bg-[#B91C1C] shadow-inner border border-slate-400"></span>
+              <span class="text-[9px] font-bold mt-1">Goivos</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- TOOLS / SHAPES -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Formas de Entrançado</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="setTool('circle')" id="toolCircle" class="tool-btn p-2.5 bg-amber-50 text-amber-900 border-2 border-amber-600 rounded-xl text-xs font-bold text-center">⭕ Anel Concêntrico</button>
+            <button onclick="setTool('sector')" id="toolSector" class="tool-btn p-2.5 bg-white text-slate-700 border-2 border-slate-200 rounded-xl text-xs font-bold text-center">🍕 Setor / Gomo</button>
+          </div>
+        </div>
+
+        <!-- RESET -->
+        <div class="pt-3 border-t border-slate-100">
+          <button onclick="clearCanvas()" class="w-full py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition-all">
+            <i class="fa-solid fa-trash-can mr-1"></i> Desmanchar Cestaria
+          </button>
+        </div>
+      </aside>
+
+      <!-- MAIN CANVAS DISPLAY -->
+      <section class="lg:col-span-6 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-title font-bold text-navy-800 text-lg">Área de Entrançado</h2>
+            <p class="text-xs text-slate-500">Clica para aplicar anéis e tramas circulares no cesto.</p>
+          </div>
+          <button onclick="exportPNG()" class="inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold font-title px-4 py-2 rounded-xl shadow transition-all">
+            <i class="fa-solid fa-download"></i> Guardar Cestaria (PNG)
+          </button>
+        </div>
+
+        <!-- Basket Stage Frame -->
+        <div class="basket-stage relative w-full aspect-square border-8 border-[#5C4033] rounded-2xl p-6 shadow-2xl flex items-center justify-center overflow-hidden">
+          <canvas id="cestariaCanvas" width="500" height="500" class="w-full h-full block cursor-crosshair rounded-full shadow-inner bg-[#FDFBF7] touch-none"></canvas>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-slate-500 font-medium pt-1">
+          <span><i class="fa-solid fa-keyboard text-amber-600 mr-1"></i> Atalhos (Ctrl+Z / Ctrl+Y)</span>
+          <span>Geometria Circular</span>
+        </div>
+      </section>
+
+      <!-- EDUCATIONAL & CULTURE PANEL -->
+      <aside class="lg:col-span-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-4">
+        <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+          <h2 class="font-title font-bold text-navy-800 text-lg">Saberes e Fibras</h2>
+          <span class="text-xs bg-amber-100 text-amber-800 font-semibold px-2 py-0.5 rounded">Cultura</span>
+        </div>
+
+        <div class="space-y-3 text-xs text-slate-600 leading-relaxed">
+          <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-1">
+            <strong class="text-navy-800 font-title text-sm flex items-center gap-1.5">
+              <i class="fa-solid fa-basket-shopping text-amber-700"></i> A Arte de Trançar
+            </strong>
+            <p>A cestaria em fibras naturais é uma das expressões artísticas mais antigas de Cabo Verde, utilizando tons crus, terrosos e pigmentos vivos tradicionais.</p>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-navy-900 text-slate-300 py-10 border-t border-navy-800 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between gap-6">
+      
+      <!-- IDENTIDADE & DIREITOS -->
+      <div class="flex flex-col items-center lg:items-start gap-2 text-center lg:text-left">
+        <div class="flex items-center gap-3">
+          <img src="logo_CriaNauta_3.png" alt="CriaNauta" class="h-8 w-auto object-contain brightness-200" onerror="this.src='logo_CriaNauta_2.png'">
+        </div>
+        <p class="text-xs text-slate-400 max-w-xs">
+          Artefactos pedagógicos digitais para explorar o património dos países de língua oficial portuguesa no 1.º Ciclo.
+        </p>
+        <span class="text-[11px] text-slate-500 mt-1">© 2026 CriaNauta · Todos os direitos reservados</span>
+      </div>
+
+      <!-- CARTÕES PADRONIZADOS (INSTAGRAM & GOFUNDME) -->
+      <div class="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
+        
+        <!-- CARTÃO 1: INSTAGRAM -->
+        <a href="https://www.instagram.com/crianauta_aprendizagem/" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto flex items-center gap-3 bg-navy-800/80 hover:bg-navy-800 p-3.5 rounded-2xl border border-slate-700/60 hover:border-amber-500/50 transition-all shadow-inner group">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 flex items-center justify-center text-white text-xl shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform">
+            <i class="fa-brands fa-instagram"></i>
+          </div>
+          <div class="text-left">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-bold text-white group-hover:text-amber-400 transition-colors">Segue o CriaNauta</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-slate-400"></i>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-0.5">@crianauta_aprendizagem</p>
+          </div>
+        </a>
+
+        <!-- CARTÃO 2: GOFUNDME (EM BREVE) -->
+        <div class="w-full sm:w-auto flex items-center gap-3 bg-navy-800/80 p-3.5 rounded-2xl border border-slate-700/60 shadow-inner">
+          <img src="gofundme.png" alt="Apoiar no GoFundMe" class="h-10 w-10 object-contain rounded-xl flex-shrink-0" onerror="this.style.display='none'">
+          <div class="text-left">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-white">Apoia o CriaNauta</span>
+              <span class="text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded">Em Breve</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-0.5">Ajuda a expandir o ecossistema</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT CESTARIA ENGINE -->
+  <script>
+    const canvas = document.getElementById('cestariaCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const PAPER_COLOR = '#FDFBF7';
+    let currentColor = '#E6CCB2';
+    let currentTool = 'circle';
+
+    let undoStack = [];
+    let redoStack = [];
+
+    function saveState() {
+      undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      redoStack = [];
+      updateUndoRedoUI();
+    }
+
+    function undo() {
+      if (undoStack.length === 0) return;
+      redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      const prev = undoStack.pop();
+      ctx.putImageData(prev, 0, 0);
+      updateUndoRedoUI();
+    }
+
+    function redo() {
+      if (redoStack.length === 0) return;
+      undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      const next = redoStack.pop();
+      ctx.putImageData(next, 0, 0);
+      updateUndoRedoUI();
+    }
+
+    function updateUndoRedoUI() {
+      document.getElementById('undoBtn').disabled = undoStack.length === 0;
+      document.getElementById('redoBtn').disabled = redoStack.length === 0;
+    }
+
+    function initCanvas() {
+      ctx.fillStyle = PAPER_COLOR;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      drawBaseGuide();
+      saveState();
+    }
+
+    function drawBaseGuide() {
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      ctx.strokeStyle = '#E2D9C5';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 200, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    function setColor(color) {
+      currentColor = color;
+      document.querySelectorAll('.color-card').forEach(c => c.classList.remove('selected'));
+      
+      const map = {
+        '#E6CCB2': 'colCrua', '#D4A373': 'colNatural', '#8D6E63': 'colVime',
+        '#5C4033': 'colEarth', '#2B2D42': 'colBlack', '#0284C7': 'colBlue',
+        '#EAB308': 'colYellow', '#B91C1C': 'colRed'
+      };
+      if (map[color] && document.getElementById(map[color])) {
+        document.getElementById(map[color]).classList.add('selected');
+      }
+    }
+
+    function setTool(tool) {
+      currentTool = tool;
+      document.querySelectorAll('.tool-btn').forEach(btn => {
+        btn.className = 'tool-btn p-2.5 bg-white text-slate-700 border-2 border-slate-200 rounded-xl text-xs font-bold text-center';
+      });
+      if (tool === 'circle') {
+        document.getElementById('toolCircle').className = 'tool-btn p-2.5 bg-amber-50 text-amber-900 border-2 border-amber-600 rounded-xl text-xs font-bold text-center';
+      } else {
+        document.getElementById('toolSector').className = 'tool-btn p-2.5 bg-amber-50 text-amber-900 border-2 border-amber-600 rounded-xl text-xs font-bold text-center';
+      }
+    }
+
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+      const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const dist = Math.hypot(x - cx, y - cy);
+
+      saveState();
+      ctx.fillStyle = currentColor;
+      ctx.strokeStyle = currentColor;
+
+      if (currentTool === 'circle') {
+        ctx.beginPath();
+        ctx.arc(cx, cy, dist, 0, Math.PI * 2);
+        ctx.lineWidth = 16;
+        ctx.stroke();
+      } else {
+        const angle = Math.atan2(y - cy, x - cx);
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, 220, angle - 0.2, angle + 0.2);
+        ctx.closePath();
+        ctx.fill();
+      }
+    });
+
+    // ATALHOS DE TECLADO GLOBAIS
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      }
+      if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') || ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'z')) {
+        e.preventDefault();
+        redo();
+      }
+    });
+
+    function clearCanvas() {
+      saveState();
+      ctx.fillStyle = PAPER_COLOR;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      drawBaseGuide();
+    }
+
+    function loadPreset(type) {
+      clearCanvas();
+      saveState();
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+
+      const colors = ['#E6CCB2', '#8D6E63', '#0284C7', '#B91C1C', '#EAB308'];
+      for (let i = 8; i > 0; i--) {
+        ctx.strokeStyle = colors[i % colors.length];
+        ctx.beginPath();
+        ctx.arc(cx, cy, i * 25, 0, Math.PI * 2);
+        ctx.lineWidth = 18;
+        ctx.stroke();
+      }
+    }
+
+    function exportPNG() {
+      const link = document.createElement('a');
+      link.download = `CriaNauta_Cestaria_${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    window.onload = function() {
+      initCanvas();
+    };
+  </script>
+</body>
+</html>

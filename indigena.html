@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="favicon_CriaNauta.png">
+  <title>Oficina de Arte Indígena e Grafismos — CriaNauta</title>
+  
+  <!-- Google Fonts: Fredoka & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { 800: '#0B253C', 900: '#071828' },
+            forest: { 800: '#14532D', 900: '#064E3B' },
+            paper: '#FDFBF7'
+          },
+          fontFamily: {
+            title: ['Fredoka', 'sans-serif'],
+            body: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #FDFBF7; color: #0B253C; }
+    h1, h2, h3, h4, .font-title { font-family: 'Fredoka', sans-serif; }
+    .stage-bg {
+      background-color: #F4EAD2;
+      background-image: radial-gradient(#D5C5A5 1.5px, transparent 1.5px);
+      background-size: 20px 20px;
+    }
+    .forest-bg {
+      background: linear-gradient(135deg, #064E3B 0%, #14532D 50%, #0B253C 100%);
+    }
+    .tool-btn.selected, .stamp-btn.selected { border-color: #14532D; background-color: #DCFCE7; box-shadow: 0 0 0 2px rgba(20, 83, 45, 0.3); }
+    .color-btn.locked { opacity: 0.4; filter: grayscale(80%); cursor: not-allowed; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-emerald-800 selection:text-white">
+
+  <!-- CABEÇALHO / NAVEGAÇÃO -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <img src="logo_CriaNauta_3.png" alt="Logótipo CriaNauta" class="h-12 w-auto object-contain transition-transform group-hover:scale-105" onerror="this.src='logo_CriaNauta_2.png'">
+      </a>
+      <div class="flex items-center gap-3">
+        <button onclick="openCraftingModal()" class="inline-flex items-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white font-title px-4 py-2 rounded-full text-sm transition-all shadow-sm">
+          <i class="fa-solid fa-flask"></i>
+          <span>🌿 Laboratório da Floresta</span>
+        </button>
+        <a href="index.html" class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-title px-4 py-2 rounded-full text-sm transition-all border border-slate-200">
+          <i class="fa-solid fa-arrow-left text-xs"></i>
+          <span>Voltar ao Início</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col gap-6">
+
+    <!-- HERO INTRO -->
+    <section class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+      <div>
+        <span class="inline-block px-2.5 py-0.5 bg-emerald-500/10 text-emerald-800 text-xs font-bold rounded mb-1">POVOS INDÍGENAS DO BRASIL · ARTE ANCESTRAL</span>
+        <h1 class="text-2xl sm:text-3xl font-bold text-navy-800">Oficina de Arte Indígena e Grafismos</h1>
+        <p class="text-slate-600 text-sm">Produz os teus pigmentos naturais da floresta e cria pinturas corporais inspiradas nos povos <strong>Yanomami</strong>, <strong>Waiãpi</strong> e <strong>Kayapó</strong>.</p>
+      </div>
+
+      <!-- Presets -->
+      <div class="flex items-center gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200 flex-wrap">
+        <span class="text-xs font-bold text-navy-800 px-2 font-title">Modelos Rápidos:</span>
+        <button onclick="loadPreset('padrao')" class="px-2.5 py-1.5 bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 border border-slate-200 rounded-lg text-xs font-semibold transition-all">🔺 Grafismo Rio</button>
+        <button onclick="loadPreset('simetria')" class="px-2.5 py-1.5 bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 border border-slate-200 rounded-lg text-xs font-semibold transition-all">🦋 Pintura Simétrica</button>
+      </div>
+    </section>
+
+    <!-- WORKSPACE -->
+    <div class="grid lg:grid-cols-12 gap-6 items-start">
+
+      <!-- TOOLS PANEL (COLUNA ESQUERDA) -->
+      <aside class="lg:col-span-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-5">
+        <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+          <h2 class="font-title font-bold text-navy-800 text-lg">Pincéis & Pigmentos</h2>
+          <span class="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded">Artesão</span>
+        </div>
+
+        <!-- UNDO / REDO -->
+        <div class="flex items-center justify-between gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200">
+          <button onclick="undo()" id="undoBtn" class="flex-1 py-1.5 px-2 bg-white hover:bg-slate-100 disabled:opacity-40 text-slate-700 rounded-lg text-xs font-bold border border-slate-200 flex items-center justify-center gap-1.5 transition-all">
+            <i class="fa-solid fa-rotate-left"></i> Desfazer
+          </button>
+          <button onclick="redo()" id="redoBtn" class="flex-1 py-1.5 px-2 bg-white hover:bg-slate-100 disabled:opacity-40 text-slate-700 rounded-lg text-xs font-bold border border-slate-200 flex items-center justify-center gap-1.5 transition-all">
+            <i class="fa-solid fa-rotate-right"></i> Refazer
+          </button>
+        </div>
+
+        <!-- DRAWING TOOLS -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Modo de Ação</label>
+          <div class="grid grid-cols-4 gap-1.5">
+            <button onclick="setTool('brush')" id="toolBrush" class="tool-btn selected flex flex-col items-center p-2 rounded-xl border-2 border-emerald-800 bg-emerald-50 text-emerald-900 font-medium text-[10px] gap-1 transition-all">
+              <i class="fa-solid fa-paintbrush"></i><span>Pincel</span>
+            </button>
+            <button onclick="setTool('eraser')" id="toolEraser" class="tool-btn flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-medium text-[10px] gap-1 transition-all">
+              <i class="fa-solid fa-eraser"></i><span>Borracha</span>
+            </button>
+            <button onclick="setTool('stamp')" id="toolStamp" class="tool-btn flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-medium text-[10px] gap-1 transition-all">
+              <i class="fa-solid fa-feather"></i><span>Símbolo</span>
+            </button>
+            <button onclick="setTool('text')" id="toolText" class="tool-btn flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-medium text-[10px] gap-1 transition-all">
+              <i class="fa-solid fa-font"></i><span>Texto</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- TEXT CONTROLS -->
+        <div id="textControls" class="hidden space-y-2 p-3 bg-emerald-50 rounded-xl border border-emerald-200">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Legenda / Povo</label>
+          <input type="text" id="indigenaTextInput" placeholder="Ex: POVO YANOMAMI" class="w-full text-xs font-semibold bg-white border border-slate-300 rounded-lg p-2 text-stone-900 outline-none focus:border-emerald-800">
+          <div class="space-y-1">
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold text-navy-800">Tamanho</span>
+              <span id="textSizeVal" class="font-mono font-bold text-emerald-900">24px</span>
+            </div>
+            <input type="range" id="textSizeRange" min="14" max="48" value="24" oninput="updateTextSize(this.value)" class="w-full accent-emerald-800 cursor-pointer">
+          </div>
+        </div>
+
+        <!-- STAMPS CATALOG -->
+        <div id="stampControls" class="hidden space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Símbolos Ancestrais</label>
+          <div class="grid grid-cols-4 gap-2">
+            
+            <div class="relative group cursor-help">
+              <button onclick="setStamp('feather')" id="stampFeather" class="stamp-btn selected w-full p-2 bg-slate-50 hover:bg-emerald-50 border-2 border-emerald-800 rounded-xl text-stone-800 font-bold text-base">🪶</button>
+              <div class="absolute left-0 bottom-full mb-2 hidden group-hover:block w-56 p-2.5 bg-navy-900 text-slate-100 text-[10px] rounded-xl shadow-2xl border border-slate-700 z-[9999] pointer-events-none leading-snug">
+                <strong class="font-title text-amber-400 block mb-0.5">Pluma Sagrada (Povos do Xingu)</strong>
+                Símbolo de ligação espiritual com as aves da floresta e elevação dos rituais.
+              </div>
+            </div>
+
+            <div class="relative group cursor-help">
+              <button onclick="setStamp('arrow')" id="stampArrow" class="stamp-btn w-full p-2 bg-slate-50 hover:bg-emerald-50 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base">🏹</button>
+              <div class="absolute left-0 bottom-full mb-2 hidden group-hover:block w-56 p-2.5 bg-navy-900 text-slate-100 text-[10px] rounded-xl shadow-2xl border border-slate-700 z-[9999] pointer-events-none leading-snug">
+                <strong class="font-title text-amber-400 block mb-0.5">Flecha / Caça (Povo Yanomami)</strong>
+                Representa a subsistência, a precisão e o respeito profundo pelos ciclos da caça.
+              </div>
+            </div>
+
+            <div class="relative group cursor-help">
+              <button onclick="setStamp('fish')" id="stampFish" class="stamp-btn w-full p-2 bg-slate-50 hover:bg-emerald-50 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base">🐟</button>
+              <div class="absolute left-0 bottom-full mb-2 hidden group-hover:block w-56 p-2.5 bg-navy-900 text-slate-100 text-[10px] rounded-xl shadow-2xl border border-slate-700 z-[9999] pointer-events-none leading-snug">
+                <strong class="font-title text-amber-400 block mb-0.5">Peixe / Rios da Amazônia</strong>
+                Simboliza a abundância das águas, os rios sagrados e a harmonia com a fauna aquática.
+              </div>
+            </div>
+
+            <div class="relative group cursor-help">
+              <button onclick="setStamp('leaf')" id="stampLeaf" class="stamp-btn w-full p-2 bg-slate-50 hover:bg-emerald-50 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base">🌿</button>
+              <div class="absolute left-0 bottom-full mb-2 hidden group-hover:block w-56 p-2.5 bg-navy-900 text-slate-100 text-[10px] rounded-xl shadow-2xl border border-slate-700 z-[9999] pointer-events-none leading-snug">
+                <strong class="font-title text-amber-400 block mb-0.5">Folhagem Medicinal</strong>
+                Representa o conhecimento ancestral das plantas de cura e a farmácia viva da floresta.
+              </div>
+            </div>
+
+            <div class="relative group cursor-help">
+              <button onclick="setStamp('sun')" id="stampSun" class="stamp-btn w-full p-2 bg-slate-50 hover:bg-emerald-50 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base">☀️</button>
+              <div class="absolute left-0 bottom-full mb-2 hidden group-hover:block w-56 p-2.5 bg-navy-900 text-slate-100 text-[10px] rounded-xl shadow-2xl border border-slate-700 z-[9999] pointer-events-none leading-snug">
+                <strong class="font-title text-amber-400 block mb-0.5">Sol e Astros (Povo Waiãpi)</strong>
+                Grafismos celestes que orientam as estações do ano, as plantações e as festividades.
+              </div>
+            </div>
+
+            <div class="relative group cursor-help">
+              <button onclick="setStamp('jaguar')" id="stampJaguar" class="stamp-btn w-full p-2 bg-slate-50 hover:bg-emerald-50 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base">🐾</button>
+              <div class="absolute left-0 bottom-full mb-2 hidden group-hover:block w-56 p-2.5 bg-navy-900 text-slate-100 text-[10px] rounded-xl shadow-2xl border border-slate-700 z-[9999] pointer-events-none leading-snug">
+                <strong class="font-title text-amber-400 block mb-0.5">Pele de Onça / Força</strong>
+                Grafismo geométrico que imita as pintas da onça-pintada, símbolo de coragem e proteção.
+              </div>
+            </div>
+
+            <div class="relative group cursor-help">
+              <button onclick="setStamp('pot')" id="stampPot" class="stamp-btn w-full p-2 bg-slate-50 hover:bg-emerald-50 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base">🏺</button>
+              <div class="absolute left-0 bottom-full mb-2 hidden group-hover:block w-56 p-2.5 bg-navy-900 text-slate-100 text-[10px] rounded-xl shadow-2xl border border-slate-700 z-[9999] pointer-events-none leading-snug">
+                <strong class="font-title text-amber-400 block mb-0.5">Cerâmica Tradicional</strong>
+                Utensílios de barro decorados com tramas geométricas para guardar água e alimentos.
+              </div>
+            </div>
+
+            <div class="relative group cursor-help">
+              <button onclick="setStamp('star')" id="stampStar" class="stamp-btn w-full p-2 bg-slate-50 hover:bg-emerald-50 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base">⭐</button>
+              <div class="absolute left-0 bottom-full mb-2 hidden group-hover:block w-56 p-2.5 bg-navy-900 text-slate-100 text-[10px] rounded-xl shadow-2xl border border-slate-700 z-[9999] pointer-events-none leading-snug">
+                <strong class="font-title text-amber-400 block mb-0.5">Constelações Indígenas</strong>
+                A astronomia indígena lê animais nas constelações da Via Láctea para marcar o tempo.
+              </div>
+            </div>
+
+          </div>
+
+          <div class="space-y-1.5 pt-2">
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold text-navy-800">Tamanho do Símbolo</span>
+              <span id="stampSizeVal" class="font-mono font-bold text-emerald-900">60px</span>
+            </div>
+            <input type="range" id="stampSizeRange" min="30" max="120" value="60" oninput="updateStampSize(this.value)" class="w-full accent-emerald-800 cursor-pointer">
+          </div>
+        </div>
+
+        <!-- PALETA DE PIGMENTOS NATURAIS -->
+        <div class="space-y-2">
+          <div class="flex justify-between items-center">
+            <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Pigmentos Naturais</label>
+            <span id="pigmentsStatus" class="text-[10px] font-bold text-emerald-700">0/8 Produzidos</span>
+          </div>
+
+          <div class="grid grid-cols-4 gap-2">
+            
+            <div class="relative group cursor-help">
+              <button onclick="selectColorIfUnlocked('#C2410C', 0)" id="colRed" class="color-btn locked w-full p-2 rounded-xl bg-[#C2410C] border-2 border-slate-300 h-9"></button>
+              <div class="absolute left-0 bottom-full mb-2 hidden group-hover:block w-48 p-2 bg-navy-900 text-slate-100 text-[10px] rounded-xl shadow-xl z-[9999] pointer-events-none">
+                <strong class="text-amber-400 block">Vermelho Urucum</strong> Sementes esmagadas do urucueiro.
+              </div>
+            </div>
+
+            <div class="relative group cursor-help">
+              <button onclick="selectColorIfUnlocked('#111827', 1)" id="colBlack" class="color-btn locked w-full p-2 rounded-xl bg-[#111827] border-2 border-slate-300 h-9"></button>
+              <div class="absolute left-0 bottom-full mb-2 hidden group-hover:block w-48 p-2 bg-navy-900 text-slate-100 text-[10px] rounded-xl shadow-xl z-[9999] pointer-events-none">
+                <strong class="text-amber-400 block">Preto Jenipapo</strong> Suco do fruto verde com carvão.
+              </div>
+            </div>
+
+            <div class="relative group cursor-help">
+              <button onclick="selectColorIfUnlocked('#D97706', 2)" id="colYellow" class="color-btn locked w-full p-2 rounded-xl bg-[#D97706] border-2 border-slate-300 h-9"></button>
+              <div class="absolute left-0 bottom-full mb-2 hidden group-hover:block w-48 p-2 bg-navy-900 text-slate-100 text-[10px] rounded-xl shadow-xl z-[9999] pointer-events-none">
+                <strong class="text-amber-400 block">Amarelo Cúrcuma</strong> Raízes moídas de açafrão-da-terra.
+              </div>
+            </div>
+
+            <div class="relative group cursor-help">
+              <button onclick="selectColorIfUnlocked('#14532D', 3)" id="colGreen" class="color-btn locked w-full p-2 rounded-xl bg-[#14532D] border-2 border-slate-300 h-9"></button>
+              <div class="absolute left-0 bottom-full mb-2 hidden group-hover:block w-48 p-2 bg-navy-900 text-slate-100 text-[10px] rounded-xl shadow-xl z-[9999] pointer-events-none">
+                <strong class="text-amber-400 block">Verde Mata</strong> Folhas maceradas da floresta.
+              </div>
+            </div>
+
+            <div class="relative group cursor-help">
+              <button onclick="selectColorIfUnlocked('#78350F', 4)" id="colBrown" class="color-btn locked w-full p-2 rounded-xl bg-[#78350F] border-2 border-slate-300 h-9"></button>
+              <div class="absolute left-0 bottom-full mb-2 hidden group-hover:block w-48 p-2 bg-navy-900 text-slate-100 text-[10px] rounded-xl shadow-xl z-[9999] pointer-events-none">
+                <strong class="text-amber-400 block">Castanho Terra</strong> Argila rica em minerais dos rios.
+              </div>
+            </div>
+
+            <div class="relative group cursor-help">
+              <button onclick="selectColorIfUnlocked('#1E3A8A', 5)" id="colBlue" class="color-btn locked w-full p-2 rounded-xl bg-[#1E3A8A] border-2 border-slate-300 h-9"></button>
+              <div class="absolute left-0 bottom-full mb-2 hidden group-hover:block w-48 p-2 bg-navy-900 text-slate-100 text-[10px] rounded-xl shadow-xl z-[9999] pointer-events-none">
+                <strong class="text-amber-400 block">Azul Índigo</strong> Folhas fermentadas de anileiro.
+              </div>
+            </div>
+
+            <div class="relative group cursor-help">
+              <button onclick="selectColorIfUnlocked('#BE185D', 6)" id="colPink" class="color-btn locked w-full p-2 rounded-xl bg-[#BE185D] border-2 border-slate-300 h-9"></button>
+              <div class="absolute left-0 bottom-full mb-2 hidden group-hover:block w-48 p-2 bg-navy-900 text-slate-100 text-[10px] rounded-xl shadow-xl z-[9999] pointer-events-none">
+                <strong class="text-amber-400 block">Rosa Flores</strong> Pétalas silvestres e seivas.
+              </div>
+            </div>
+
+            <div class="relative group cursor-help">
+              <button onclick="selectColorIfUnlocked('#F5F5F4', 7)" id="colWhite" class="color-btn locked w-full p-2 rounded-xl bg-[#F5F5F4] border-2 border-slate-300 h-9"></button>
+              <div class="absolute left-0 bottom-full mb-2 hidden group-hover:block w-48 p-2 bg-navy-900 text-slate-100 text-[10px] rounded-xl shadow-xl z-[9999] pointer-events-none">
+                <strong class="text-amber-400 block">Branco Tabatinga</strong> Giz natural e pó de conchas.
+              </div>
+            </div>
+
+          </div>
+          <p class="text-[10px] text-amber-600 font-semibold pt-1"><i class="fa-solid fa-lock mr-1"></i> Clica em "🌿 Laboratório da Floresta" para produzir as cores!</p>
+        </div>
+
+        <!-- RESET -->
+        <div class="pt-3 border-t border-slate-100">
+          <button onclick="clearCanvas()" class="w-full py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition-all">
+            <i class="fa-solid fa-trash-can mr-1"></i> Limpar Tela
+          </button>
+        </div>
+      </aside>
+
+      <!-- MAIN CANVAS DISPLAY (COLUNA CENTRAL) -->
+      <section class="lg:col-span-6 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-title font-bold text-navy-800 text-lg">Tela de Grafismos e Pintura</h2>
+            <p id="modeHint" class="text-xs text-slate-500">Modo atual: Pincel livre tradicional.</p>
+          </div>
+          <button onclick="exportPNG()" class="inline-flex items-center gap-2 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold font-title px-4 py-2 rounded-xl shadow transition-all">
+            <i class="fa-solid fa-download"></i> Guardar Arte (PNG)
+          </button>
+        </div>
+
+        <!-- Canvas Stage Frame -->
+        <div class="stage-bg relative w-full aspect-[4/3] border-8 border-[#14532D] rounded-2xl p-6 shadow-2xl flex items-center justify-center overflow-hidden">
+          <canvas id="indigenaCanvas" width="600" height="450" class="w-full h-full block cursor-crosshair rounded-sm shadow-inner bg-[#FDFBF7] touch-none"></canvas>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-slate-500 font-medium pt-1">
+          <span><i class="fa-solid fa-keyboard text-emerald-800 mr-1"></i> Atalhos (Ctrl+Z / Ctrl+Y)</span>
+          <span>Herança Ancestral dos Povos Indígenas</span>
+        </div>
+      </section>
+
+      <!-- CATÁLOGO VISUAL CARROSSEL DE INSPIRAÇÃO (COLUNA DIREITA) -->
+      <aside class="lg:col-span-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-4">
+        <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+          <h2 class="font-title font-bold text-navy-800 text-base flex items-center gap-1.5">
+            <i class="fa-solid fa-images text-emerald-700"></i> Catálogo de Inspiração
+          </h2>
+          <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded" id="carouselIndicator">1 / 5</span>
+        </div>
+
+        <!-- CARROSSEL DISPLAY CARD -->
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col gap-3 relative overflow-hidden">
+          
+          <!-- Mini Preview Canvas -->
+          <div class="w-full h-32 bg-[#FDFBF7] border border-slate-200 rounded-lg flex items-center justify-center overflow-hidden shadow-inner">
+            <canvas id="carouselPreviewCanvas" width="240" height="120" class="w-full h-full block"></canvas>
+          </div>
+
+          <!-- Info do Grafismo -->
+          <div class="space-y-1">
+            <span class="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded inline-block" id="cardGroup">Povo Waiãpi (Amapá)</span>
+            <h3 class="font-title font-bold text-navy-800 text-sm" id="cardTitle">Kusiwa (Padrão Cobra-Grande)</h3>
+            <p class="text-[11px] text-slate-600 leading-snug" id="cardDesc">Padrão geométrico contínuo que evoca as escamas da cobra-sucuri. Património Cultural Imaterial reconhecido pela UNESCO.</p>
+          </div>
+
+          <!-- Botões do Carrossel -->
+          <div class="flex items-center justify-between pt-2 border-t border-slate-200/60">
+            <button onclick="prevCarousel()" class="p-2 bg-white hover:bg-slate-100 text-slate-700 rounded-lg border border-slate-200 text-xs font-bold transition-all" title="Anterior">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            <button onclick="applyCarouselPreset()" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-title text-[11px] font-bold rounded-lg shadow transition-all">
+              Aplicar na Tela
+            </button>
+
+            <button onclick="nextCarousel()" class="p-2 bg-white hover:bg-slate-100 text-slate-700 rounded-lg border border-slate-200 text-xs font-bold transition-all" title="Seguinte">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+
+        </div>
+
+      </aside>
+
+    </div>
+
+    <!-- BLOCO DINÂMICO DE ARTE E SABERES / CURIOSIDADES (PARTE INFERIOR) -->
+    <section class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div class="space-y-2 max-w-4xl">
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full font-title flex items-center gap-1">
+            <i class="fa-solid fa-lightbulb"></i> Arte & Saberes · Sabia que?
+          </span>
+          <span class="text-xs text-slate-400 font-medium">Curiosidade Aleatória</span>
+        </div>
+        <h3 class="font-title font-bold text-navy-800 text-lg" id="factTitle">Carregando curiosidade...</h3>
+        <p class="text-xs text-slate-600 leading-relaxed" id="factContent">...</p>
+      </div>
+
+      <button onclick="loadRandomFact()" class="flex-shrink-0 inline-flex items-center gap-2 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 font-title px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold transition-all shadow-sm">
+        <i class="fa-solid fa-shuffle"></i> Outra Curiosidade
+      </button>
+    </section>
+
+  </main>
+
+  <!-- MODAL LABORATÓRIO DA FLORESTA (VASO DE CERÂMICA & DRAG AND DROP) -->
+  <div id="craftingModal" class="fixed inset-0 z-[999] bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="forest-bg max-w-3xl w-full rounded-2xl p-6 border border-emerald-600/50 shadow-2xl space-y-5 text-white">
+      <div class="flex justify-between items-center border-b border-emerald-700/60 pb-3">
+        <div>
+          <h3 class="font-title font-bold text-lg text-amber-300 flex items-center gap-2">
+            <i class="fa-solid fa-seedling"></i> Laboratório da Floresta: Preparação de Pigmentos
+          </h3>
+          <p class="text-xs text-emerald-200">Arrasta o ingrediente natural para o **vaso de cerâmica** no centro e clica várias vezes para macerar!</p>
+        </div>
+        <button onclick="closeCraftingModal()" class="w-8 h-8 rounded-full bg-emerald-800 hover:bg-emerald-700 flex items-center justify-center text-white transition-all">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- ÁREA INTERATIVA DO LABORATÓRIO -->
+      <div class="grid md:grid-cols-12 gap-4 items-center min-h-[320px]">
+        
+        <!-- INGREDIENTES DISPONÍVEIS À ESQUERDA -->
+        <div class="md:col-span-4 bg-emerald-950/60 p-4 rounded-xl border border-emerald-700/50 space-y-2 max-h-[300px] overflow-y-auto">
+          <h4 class="text-xs font-bold text-amber-200 uppercase tracking-wider mb-2">Ingredientes da Floresta</h4>
+          <div id="ingredientsBank" class="space-y-2">
+            <!-- Injetado via JS -->
+          </div>
+        </div>
+
+        <!-- VASO DE CERÂMICA NO CENTRO -->
+        <div class="md:col-span-8 bg-emerald-900/40 p-6 rounded-2xl border-2 border-dashed border-emerald-600/60 flex flex-col items-center justify-center text-center relative" id="ceramicPotDropZone" ondragover="allowDrop(event)" ondragleave="removeDropStyle(event)" ondrop="dropIngredient(event)">
+          
+          <div id="potContent" class="flex flex-col items-center gap-3">
+            <div class="w-24 h-24 rounded-full bg-amber-800/80 border-4 border-amber-600 flex items-center justify-center shadow-2xl relative overflow-hidden">
+              <i class="fa-solid fa-jar text-amber-200 text-4xl"></i>
+              <div id="liquidFill" class="absolute bottom-0 w-full bg-orange-500 transition-all duration-300" style="height: 0%;"></div>
+            </div>
+            <div>
+              <h4 class="font-title font-bold text-sm text-amber-200">Vaso de Cerâmica</h4>
+              <p id="potInstruction" class="text-xs text-emerald-200 mt-1">Arrasta um ingrediente para aqui...</p>
+            </div>
+          </div>
+
+          <!-- Área de Maceração (Cliques) -->
+          <div id="macerationArea" class="hidden flex-col items-center gap-3 w-full">
+            <div class="flex items-center gap-3">
+              <span id="activeIngredientIcon" class="text-3xl">🌿</span>
+              <div class="text-left">
+                <h4 id="activeIngredientName" class="font-title font-bold text-sm text-amber-300">Ingrediente</h4>
+                <p class="text-[11px] text-emerald-200">Clica repetidamente no pilão para esmagar!</p>
+              </div>
+            </div>
+
+            <!-- Botão de Esmagar -->
+            <button onclick="mashIngredient()" class="w-32 h-32 rounded-full bg-gradient-to-tr from-amber-700 to-amber-500 hover:from-amber-600 hover:to-amber-400 border-4 border-amber-300 shadow-2xl flex flex-col items-center justify-center text-white active:scale-95 transition-all group">
+              <i class="fa-solid fa-mortar-pestle text-3xl group-hover:rotate-12 transition-transform"></i>
+              <span class="font-title font-bold text-xs mt-1">Esmagar!</span>
+            </button>
+
+            <!-- Barra de Progresso -->
+            <div class="w-full max-w-xs bg-emerald-950 rounded-full h-3 p-0.5 border border-emerald-600">
+              <div id="mashProgressBar" class="bg-amber-400 h-full rounded-full transition-all duration-150" style="width: 0%;"></div>
+            </div>
+            <span id="mashProgressText" class="text-xs font-mono text-amber-300">0% Preparado</span>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="flex justify-between items-center pt-2 border-t border-emerald-700/60">
+        <span id="labStatus" class="text-xs text-emerald-200 font-semibold">Pigmentos prontos: 0/8</span>
+        <button onclick="closeCraftingModal()" class="bg-amber-500 hover:bg-amber-600 text-navy-900 font-title font-bold px-6 py-2.5 rounded-xl text-xs transition-all shadow">
+          Concluir e Pintar 🎨
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-navy-900 text-slate-300 py-10 border-t border-navy-800 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between gap-6">
+      
+      <!-- IDENTIDADE & DIREITOS -->
+      <div class="flex flex-col items-center lg:items-start gap-2 text-center lg:text-left">
+        <div class="flex items-center gap-3">
+          <img src="logo_CriaNauta_3.png" alt="CriaNauta" class="h-8 w-auto object-contain brightness-200" onerror="this.src='logo_CriaNauta_2.png'">
+        </div>
+        <p class="text-xs text-slate-400 max-w-xs">
+          Artefactos pedagógicos digitais para explorar o património dos países de língua oficial portuguesa no 1.º Ciclo.
+        </p>
+        <span class="text-[11px] text-slate-500 mt-1">© 2026 CriaNauta · Todos os direitos reservados</span>
+      </div>
+
+      <!-- CARTÕES PADRONIZADOS (INSTAGRAM & GOFUNDME) -->
+      <div class="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
+        
+        <!-- CARTÃO 1: INSTAGRAM -->
+        <a href="https://www.instagram.com/crianauta_aprendizagem/" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto flex items-center gap-3 bg-navy-800/80 hover:bg-navy-800 p-3.5 rounded-2xl border border-slate-700/60 hover:border-amber-500/50 transition-all shadow-inner group">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 flex items-center justify-center text-white text-xl shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform">
+            <i class="fa-brands fa-instagram"></i>
+          </div>
+          <div class="text-left">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-bold text-white group-hover:text-amber-400 transition-colors">Segue o CriaNauta</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-slate-400"></i>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-0.5">@crianauta_aprendizagem</p>
+          </div>
+        </a>
+
+        <!-- CARTÃO 2: GOFUNDME (EM BREVE) -->
+        <div class="w-full sm:w-auto flex items-center gap-3 bg-navy-800/80 p-3.5 rounded-2xl border border-slate-700/60 shadow-inner">
+          <img src="gofundme.png" alt="Apoiar no GoFundMe" class="h-10 w-10 object-contain rounded-xl flex-shrink-0" onerror="this.style.display='none'">
+          <div class="text-left">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-white">Apoia o CriaNauta</span>
+              <span class="text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded">Em Breve</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-0.5">Ajuda a expandir o ecossistema</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT INDIGENA ART ENGINE -->
+  <script>
+    const canvas = document.getElementById('indigenaCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const PAPER_COLOR = '#FDFBF7';
+    let currentColor = null;
+    let currentTool = 'brush';
+    let currentStamp = 'feather';
+    let stampSize = 60;
+    let textSize = 24;
+
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    let undoStack = [];
+    let redoStack = [];
+
+    let pigmentsUnlocked = Array(8).fill(false);
+    let currentActiveIndex = null;
+    let mashProgress = 0;
+
+    const pigmentsInfo = [
+      { name: 'Vermelho Urucum', color: '#C2410C', btnId: 'colRed', source: 'Sementes do Urucueiro', icon: '🌰' },
+      { name: 'Preto Jenipapo', color: '#111827', btnId: 'colBlack', source: 'Fruto verde do Jenipapeiro', icon: '🫐' },
+      { name: 'Amarelo Cúrcuma', color: '#D97706', btnId: 'colYellow', source: 'Raízes de Açafrão-da-terra', icon: '🥔' },
+      { name: 'Verde Mata', color: '#14532D', btnId: 'colGreen', source: 'Folhas maceradas da floresta', icon: '🌿' },
+      { name: 'Castanho Terra', color: '#78350F', btnId: 'colBrown', source: 'Argila mineral de margem de rio', icon: '🪨' },
+      { name: 'Azul Índigo', color: '#1E3A8A', btnId: 'colBlue', source: 'Folhas fermentadas de anileiro', icon: '🍃' },
+      { name: 'Rosa Flores', color: '#BE185D', btnId: 'colPink', source: 'Pétalas silvestres e seivas', icon: '🌸' },
+      { name: 'Branco Tabatinga', color: '#F5F5F4', btnId: 'colWhite', source: 'Giz natural e pó de conchas', icon: '🐚' }
+    ];
+
+    // BANCO DE CURIOSIDADES ETNOGRÁFICAS PARA O BLOCO INFERIOR
+    const factsList = [
+      {
+        title: "A Arte Kusiwa do Povo Waiãpi",
+        content: "O grafismo corporal Kusiwa, do povo Waiãpi (Amapá), utiliza o suco do fruto jenipapo e sementes de urucum. Esta arte ancestral foi declarada Património Cultural Imaterial da Humanidade pela UNESCO em 2003."
+      },
+      {
+        title: "A Simbologia da Pele de Onça",
+        content: "Para muitos povos da floresta amazónica, pintar os padrões da pele da onça-pintada no corpo confere a coragem, a rapidez e a agilidade da onça ao guerreiro ou caçador durante as expedições."
+      },
+      {
+        title: "O Mistério do Jenipapo",
+        content: "Quando o sumo do jenipapo é colhido do fruto verde, ele é transparente! Ao entrar em contacto com o ar e com a pele, transforma-se num azul-escuro/preto profundo que pode durar até duas semanas no corpo."
+      },
+      {
+        title: "Pinturas de Celebração e Proteção",
+        content: "A pintura corporal indígena não é apenas estética: indica a posição social de um indivíduo, o seu grupo familiar, e é essencial em rituais de passagem, celebrações da colheita e danças ancestrais."
+      },
+      {
+        title: "Linhas Retas e Onduladas dos Yanomami",
+        content: "Entre os Yanomami, a linha reta (Xaririwë) representa a descida dos espíritos da floresta, enquanto as linhas sinuosas (Õni ëyëkewë) evocam os movimentos sagrados da serpente e da água dos rios."
+      }
+    ];
+
+    // CATÁLOGO DE INSPIRAÇÃO DO CARROSSEL
+    const carouselItems = [
+      {
+        title: "Kusiwa (Cobra-Grande)",
+        group: "Povo Waiãpi (Amapá)",
+        desc: "Padrão geométrico em ziguezague contínuo que evoca o movimento e a pele da sucamuropo (cobra-grande). Património UNESCO.",
+        draw: (c, xCtx) => {
+          xCtx.strokeStyle = "#111827"; xCtx.lineWidth = 4;
+          xCtx.beginPath();
+          for(let x = 10; x < 230; x += 30) {
+            xCtx.moveTo(x, 40); xCtx.lineTo(x + 15, 80); xCtx.lineTo(x + 30, 40);
+          }
+          xCtx.stroke();
+        }
+      },
+      {
+        title: "Ximorewë (Pintassilgo)",
+        group: "Povo Yanomami (Roraima)",
+        desc: "Grafismo facial e peitoral com triângulos intercalados que imitam a plumagem das aves da montanha e a elevação ritual.",
+        draw: (c, xCtx) => {
+          xCtx.fillStyle = "#C2410C";
+          for(let x = 20; x < 220; x += 40) {
+            xCtx.beginPath(); xCtx.moveTo(x, 80); xCtx.lineTo(x+20, 30); xCtx.lineTo(x+40, 80); xCtx.fill();
+          }
+        }
+      },
+      {
+        title: "Mepêtí (Pele da Onça)",
+        group: "Povo Kayapó (Pará)",
+        desc: "Manchas circulares e pontos interiores aplicados com carimbos de madeira e fibra para infundir proteção e vigor da onça.",
+        draw: (c, xCtx) => {
+          xCtx.fillStyle = "#111827";
+          for(let r=0; r<2; r++) {
+            for(let col=0; col<5; col++) {
+              xCtx.beginPath(); xCtx.arc(30 + col*45, 35 + r*45, 12, 0, Math.PI*2); xCtx.fill();
+              xCtx.fillStyle = "#C2410C";
+              xCtx.beginPath(); xCtx.arc(30 + col*45, 35 + r*45, 4, 0, Math.PI*2); xCtx.fill();
+              xCtx.fillStyle = "#111827";
+            }
+          }
+        }
+      },
+      {
+        title: "Yawanawá (Constelação)",
+        group: "Povo Yawanawá (Acre)",
+        desc: "Pontos e gregas inspiradas nas estrelas da floresta e na força espiritual das plantas medicinais como a jina.",
+        draw: (c, xCtx) => {
+          xCtx.strokeStyle = "#D97706"; xCtx.lineWidth = 3;
+          xCtx.beginPath(); xCtx.strokeRect(30, 25, 180, 70); xCtx.stroke();
+          xCtx.fillStyle = "#C2410C";
+          for(let i=0; i<6; i++) {
+            xCtx.beginPath(); xCtx.arc(50 + i*28, 60, 6, 0, Math.PI*2); xCtx.fill();
+          }
+        }
+      },
+      {
+        title: "Mati (Rios Sagrados)",
+        group: "Povos do Xingu (Mato Grosso)",
+        desc: "Linhas paralelas contínuas com cruzamentos que simbolizam os afluentes do rio Xingu e a vida comunitária.",
+        draw: (c, xCtx) => {
+          xCtx.strokeStyle = "#14532D"; xCtx.lineWidth = 4;
+          xCtx.beginPath();
+          xCtx.moveTo(20, 35); xCtx.lineTo(220, 35);
+          xCtx.moveTo(20, 60); xCtx.lineTo(220, 60);
+          xCtx.moveTo(20, 85); xCtx.lineTo(220, 85);
+          xCtx.stroke();
+        }
+      }
+    ];
+
+    let currentCarouselIndex = 0;
+
+    function saveState() {
+      undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      redoStack = [];
+      updateUndoRedoUI();
+    }
+
+    function undo() {
+      if (undoStack.length === 0) return;
+      redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      const prev = undoStack.pop();
+      ctx.putImageData(prev, 0, 0);
+      updateUndoRedoUI();
+    }
+
+    function redo() {
+      if (redoStack.length === 0) return;
+      undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      const next = redoStack.pop();
+      ctx.putImageData(next, 0, 0);
+      updateUndoRedoUI();
+    }
+
+    function updateUndoRedoUI() {
+      document.getElementById('undoBtn').disabled = undoStack.length === 0;
+      document.getElementById('redoBtn').disabled = redoStack.length === 0;
+    }
+
+    function initCanvas() {
+      ctx.fillStyle = PAPER_COLOR;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      saveState();
+      buildIngredientsBank();
+      loadRandomFact();
+      updateCarouselCard();
+    }
+
+    // CARROSSEL DE INSPIRAÇÃO
+    function updateCarouselCard() {
+      const item = carouselItems[currentCarouselIndex];
+      document.getElementById('carouselIndicator').innerText = `${currentCarouselIndex + 1} / ${carouselItems.length}`;
+      document.getElementById('cardGroup').innerText = item.group;
+      document.getElementById('cardTitle').innerText = item.title;
+      document.getElementById('cardDesc').innerText = item.desc;
+
+      const pCanvas = document.getElementById('carouselPreviewCanvas');
+      const pCtx = pCanvas.getContext('2d');
+      pCtx.fillStyle = PAPER_COLOR;
+      pCtx.fillRect(0, 0, pCanvas.width, pCanvas.height);
+      item.draw(pCanvas, pCtx);
+    }
+
+    function prevCarousel() {
+      currentCarouselIndex = (currentCarouselIndex - 1 + carouselItems.length) % carouselItems.length;
+      updateCarouselCard();
+    }
+
+    function nextCarousel() {
+      currentCarouselIndex = (currentCarouselIndex + 1) % carouselItems.length;
+      updateCarouselCard();
+    }
+
+    function applyCarouselPreset() {
+      if (!pigmentsUnlocked[0]) {
+        alert('Produz primeiro os pigmentos no Laboratório da Floresta!');
+        openCraftingModal();
+        return;
+      }
+      setColor(pigmentsInfo[0].color);
+      clearCanvas();
+      saveState();
+
+      const item = carouselItems[currentCarouselIndex];
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+
+      // Desenha o modelo no canvas principal
+      if (currentCarouselIndex === 0) {
+        ctx.strokeStyle = '#111827'; ctx.lineWidth = 8;
+        ctx.beginPath();
+        for (let x = 50; x < canvas.width - 50; x += 40) {
+          ctx.moveTo(x, cy - 40); ctx.lineTo(x + 20, cy + 40); ctx.lineTo(x + 40, cy - 40);
+        }
+        ctx.stroke();
+      } else if (currentCarouselIndex === 1) {
+        ctx.fillStyle = '#C2410C';
+        for(let x = 80; x < canvas.width - 80; x += 80) {
+          ctx.beginPath(); ctx.moveTo(x, cy + 60); ctx.lineTo(x + 40, cy - 60); ctx.lineTo(x + 80, cy + 60); ctx.fill();
+        }
+      } else if (currentCarouselIndex === 2) {
+        ctx.fillStyle = '#111827';
+        for(let r=0; r<2; r++) {
+          for(let col=0; col<4; col++) {
+            ctx.beginPath(); ctx.arc(120 + col*110, cy - 40 + r*90, 30, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#C2410C';
+            ctx.beginPath(); ctx.arc(120 + col*110, cy - 40 + r*90, 10, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#111827';
+          }
+        }
+      } else {
+        ctx.strokeStyle = '#14532D'; ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.moveTo(60, cy - 50); ctx.lineTo(canvas.width - 60, cy - 50);
+        ctx.moveTo(60, cy); ctx.lineTo(canvas.width - 60, cy);
+        ctx.moveTo(60, cy + 50); ctx.lineTo(canvas.width - 60, cy + 50);
+        ctx.stroke();
+      }
+
+      applyText(item.group.toUpperCase(), cx, cy + 140);
+    }
+
+    // BLOCO DE CURIOSIDADES ALEATÓRIAS
+    function loadRandomFact() {
+      const randomIndex = Math.floor(Math.random() * factsList.length);
+      const fact = factsList[randomIndex];
+      document.getElementById('factTitle').innerText = fact.title;
+      document.getElementById('factContent').innerText = fact.content;
+    }
+
+    function openCraftingModal() {
+      document.getElementById('craftingModal').classList.remove('hidden');
+      document.getElementById('craftingModal').classList.add('flex');
+    }
+
+    function closeCraftingModal() {
+      document.getElementById('craftingModal').classList.remove('flex');
+      document.getElementById('craftingModal').classList.add('hidden');
+    }
+
+    function buildIngredientsBank() {
+      const bank = document.getElementById('ingredientsBank');
+      bank.innerHTML = '';
+
+      pigmentsInfo.forEach((pigment, idx) => {
+        const isUnlocked = pigmentsUnlocked[idx];
+        const item = document.createElement('div');
+        item.className = `flex items-center justify-between p-2.5 rounded-xl border transition-all ${isUnlocked ? 'bg-emerald-900/60 border-emerald-600 opacity-60' : 'bg-emerald-950/80 border-emerald-700/70 hover:border-amber-400 cursor-grab active:cursor-grabbing'}`;
+        
+        if (!isUnlocked) {
+          item.draggable = true;
+          item.ondragstart = (e) => dragStart(e, idx);
+        }
+
+        item.innerHTML = `
+          <div class="flex items-center gap-2.5">
+            <span class="text-2xl">${pigment.icon}</span>
+            <div class="text-left">
+              <h5 class="font-title font-bold text-xs text-amber-200">${pigment.name}</h5>
+              <p class="text-[9px] text-emerald-200">${pigment.source}</p>
+            </div>
+          </div>
+          <span class="text-[10px] font-bold px-2 py-1 rounded ${isUnlocked ? 'bg-emerald-700 text-white' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'}">
+            ${isUnlocked ? 'Pronto' : 'Arrastar'}
+          </span>
+        `;
+        bank.appendChild(item);
+      });
+    }
+
+    function dragStart(e, idx) {
+      e.dataTransfer.setData('text/plain', idx);
+    }
+
+    function allowDrop(e) {
+      e.preventDefault();
+      document.getElementById('ceramicPotDropZone').classList.add('border-amber-400', 'bg-emerald-900/60');
+    }
+
+    function removeDropStyle(e) {
+      document.getElementById('ceramicPotDropZone').classList.remove('border-amber-400', 'bg-emerald-900/60');
+    }
+
+    function dropIngredient(e) {
+      e.preventDefault();
+      removeDropStyle(e);
+      const idx = Number(e.dataTransfer.getData('text/plain'));
+      if (isNaN(idx) || pigmentsUnlocked[idx]) return;
+
+      currentActiveIndex = idx;
+      mashProgress = 0;
+      const pigment = pigmentsInfo[idx];
+
+      document.getElementById('potContent').classList.add('hidden');
+      document.getElementById('macerationArea').classList.remove('hidden');
+      document.getElementById('macerationArea').classList.add('flex');
+
+      document.getElementById('activeIngredientIcon').innerText = pigment.icon;
+      document.getElementById('activeIngredientName').innerText = pigment.name;
+      document.getElementById('mashProgressBar').style.width = '0%';
+      document.getElementById('mashProgressText').innerText = '0% Preparado';
+      document.getElementById('liquidFill').style.backgroundColor = pigment.color;
+      document.getElementById('liquidFill').style.height = '0%';
+    }
+
+    function mashIngredient() {
+      if (currentActiveIndex === null) return;
+      mashProgress += 20;
+      if (mashProgress > 100) mashProgress = 100;
+
+      document.getElementById('mashProgressBar').style.width = `${mashProgress}%`;
+      document.getElementById('mashProgressText').innerText = `${mashProgress}% Preparado`;
+      document.getElementById('liquidFill').style.height = `${mashProgress}%`;
+
+      if (mashProgress === 100) {
+        pigmentsUnlocked[currentActiveIndex] = true;
+        updatePigmentsUI();
+        buildIngredientsBank();
+
+        if (!currentColor) {
+          setColor(pigmentsInfo[currentActiveIndex].color);
+        }
+
+        setTimeout(() => {
+          document.getElementById('macerationArea').classList.remove('flex');
+          document.getElementById('macerationArea').classList.add('hidden');
+          document.getElementById('potContent').classList.remove('hidden');
+          document.getElementById('potContent').classList.add('flex');
+          document.getElementById('potInstruction').innerText = 'Pigmento produzido com sucesso! Arrasta outro ingrediente...';
+          currentActiveIndex = null;
+        }, 600);
+      }
+    }
+
+    function updatePigmentsUI() {
+      let unlockedCount = pigmentsUnlocked.filter(Boolean).length;
+      document.getElementById('pigmentsStatus').innerText = `${unlockedCount}/8 Produzidos`;
+      document.getElementById('labStatus').innerText = `Pigmentos prontos: ${unlockedCount}/8`;
+
+      pigmentsInfo.forEach((pigment, idx) => {
+        const btn = document.getElementById(pigment.btnId);
+        if (pigmentsUnlocked[idx]) {
+          btn.classList.remove('locked');
+        } else {
+          btn.classList.add('locked');
+        }
+      });
+    }
+
+    function selectColorIfUnlocked(color, idx) {
+      if (!pigmentsUnlocked[idx]) {
+        openCraftingModal();
+        return;
+      }
+      setColor(color);
+    }
+
+    function setColor(color) {
+      currentColor = color;
+      document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('border-emerald-950', 'ring-2'));
+      const pigmentObj = pigmentsInfo.find(p => p.color === color);
+      if (pigmentObj && document.getElementById(pigmentObj.btnId)) {
+        document.getElementById(pigmentObj.btnId).classList.add('border-emerald-950', 'ring-2');
+      }
+    }
+
+    function setTool(tool) {
+      currentTool = tool;
+      ['toolBrush', 'toolEraser', 'toolStamp', 'toolText'].forEach(id => {
+        document.getElementById(id).classList.remove('selected', 'border-emerald-800', 'bg-emerald-50', 'text-emerald-900');
+        document.getElementById(id).classList.add('border-slate-200', 'bg-white', 'text-slate-700');
+      });
+
+      document.getElementById('textControls').classList.add('hidden');
+      document.getElementById('stampControls').classList.add('hidden');
+
+      if (tool === 'brush') {
+        document.getElementById('toolBrush').classList.add('selected', 'border-emerald-800', 'bg-emerald-50', 'text-emerald-900');
+        document.getElementById('modeHint').innerText = 'Modo atual: Pincel livre tradicional.';
+      } else if (tool === 'eraser') {
+        document.getElementById('toolEraser').classList.add('selected', 'border-emerald-800', 'bg-emerald-50', 'text-emerald-900');
+        document.getElementById('modeHint').innerText = 'Modo atual: Borracha.';
+      } else if (tool === 'stamp') {
+        document.getElementById('toolStamp').classList.add('selected', 'border-emerald-800', 'bg-emerald-50', 'text-emerald-900');
+        document.getElementById('stampControls').classList.remove('hidden');
+        document.getElementById('modeHint').innerText = 'Modo atual: Aplicar Símbolo Ancestral.';
+      } else if (tool === 'text') {
+        document.getElementById('toolText').classList.add('selected', 'border-emerald-800', 'bg-emerald-50', 'text-emerald-900');
+        document.getElementById('textControls').classList.remove('hidden');
+        document.getElementById('modeHint').innerText = 'Modo atual: Inserir Legenda/Povo.';
+      }
+    }
+
+    function setStamp(stamp) {
+      currentStamp = stamp;
+      document.querySelectorAll('.stamp-btn').forEach(btn => btn.classList.remove('selected', 'border-emerald-800', 'bg-emerald-50'));
+      const map = { 
+        'feather': 'stampFeather', 'arrow': 'stampArrow', 'fish': 'stampFish', 
+        'leaf': 'stampLeaf', 'sun': 'stampSun', 'jaguar': 'stampJaguar',
+        'pot': 'stampPot', 'star': 'stampStar' 
+      };
+      if (map[stamp]) {
+        document.getElementById(map[stamp]).classList.add('selected', 'border-emerald-800', 'bg-emerald-50');
+      }
+    }
+
+    function updateStampSize(val) {
+      stampSize = Number(val);
+      document.getElementById('stampSizeVal').innerText = `${stampSize}px`;
+    }
+
+    function updateTextSize(val) {
+      textSize = Number(val);
+      document.getElementById('textSizeVal').innerText = `${textSize}px`;
+    }
+
+    function getCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: (clientX - rect.left) * (canvas.width / rect.width),
+        y: (clientY - rect.top) * (canvas.height / rect.height)
+      };
+    }
+
+    function applyStamp(shape, cx, cy) {
+      if (!currentColor) {
+        alert('Por favor, produz e seleciona um pigmento primeiro!');
+        openCraftingModal();
+        return;
+      }
+
+      saveState();
+      ctx.save();
+      ctx.translate(cx, cy);
+      const s = stampSize / 60;
+      ctx.scale(s, s);
+      ctx.fillStyle = currentColor;
+      ctx.strokeStyle = currentColor;
+
+      if (shape === 'feather') {
+        ctx.beginPath();
+        ctx.moveTo(0, 30);
+        ctx.quadraticCurveTo(-25, 0, 0, -35);
+        ctx.quadraticCurveTo(25, 0, 0, 30);
+        ctx.fill();
+      } else if (shape === 'arrow') {
+        ctx.fillRect(-2, -30, 4, 60);
+        ctx.beginPath();
+        ctx.moveTo(0, -35);
+        ctx.lineTo(-12, -15);
+        ctx.lineTo(12, -15);
+        ctx.closePath();
+        ctx.fill();
+      } else if (shape === 'fish') {
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 25, 15, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(20, 0);
+        ctx.lineTo(35, -15);
+        ctx.lineTo(35, 15);
+        ctx.closePath();
+        ctx.fill();
+      } else if (shape === 'leaf') {
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 15, 30, Math.PI / 4, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (shape === 'sun') {
+        ctx.beginPath();
+        ctx.arc(0, 0, 14, 0, Math.PI * 2);
+        ctx.fill();
+        for (let i = 0; i < 8; i++) {
+          const angle = (i * Math.PI) / 4;
+          ctx.fillRect(Math.cos(angle) * 20 - 2, Math.sin(angle) * 20 - 2, 4, 4);
+        }
+      } else if (shape === 'jaguar') {
+        ctx.beginPath();
+        ctx.arc(0, 0, 18, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = PAPER_COLOR;
+        ctx.beginPath();
+        ctx.arc(-6, -4, 4, 0, Math.PI * 2);
+        ctx.arc(6, -4, 4, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (shape === 'pot') {
+        ctx.beginPath();
+        ctx.arc(0, 5, 20, 0, Math.PI);
+        ctx.lineTo(-12, -15);
+        ctx.lineTo(12, -15);
+        ctx.closePath();
+        ctx.fill();
+      } else if (shape === 'star') {
+        ctx.beginPath();
+        for (let i = 0; i < 5; i++) {
+          ctx.lineTo(Math.cos((18 + i * 72) * Math.PI / 180) * 25, -Math.sin((18 + i * 72) * Math.PI / 180) * 25);
+          ctx.lineTo(Math.cos((54 + i * 72) * Math.PI / 180) * 12, -Math.sin((54 + i * 72) * Math.PI / 180) * 12);
+        }
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    function applyText(text, cx, cy) {
+      if (!currentColor) {
+        alert('Por favor, produz e seleciona um pigmento primeiro!');
+        openCraftingModal();
+        return;
+      }
+      if (!text || text.trim() === '') return;
+      saveState();
+      ctx.fillStyle = currentColor;
+      ctx.font = `bold ${textSize}px Fredoka, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(text, cx, cy);
+    }
+
+    function startDraw(e) {
+      if (!currentColor && currentTool === 'brush') {
+        alert('Os pigmentos estão por produzir! Clica em "🌿 Laboratório da Floresta".');
+        openCraftingModal();
+        return;
+      }
+
+      const coords = getCoords(e);
+      if (currentTool === 'stamp') {
+        applyStamp(currentStamp, coords.x, coords.y);
+        return;
+      }
+      if (currentTool === 'text') {
+        const txt = document.getElementById('indigenaTextInput').value;
+        applyText(txt, coords.x, coords.y);
+        return;
+      }
+
+      isDrawing = true;
+      saveState();
+      lastX = coords.x;
+      lastY = coords.y;
+    }
+
+    function draw(e) {
+      if (!isDrawing || (currentTool !== 'brush' && currentTool !== 'eraser')) return;
+      const coords = getCoords(e);
+
+      ctx.strokeStyle = currentTool === 'eraser' ? PAPER_COLOR : currentColor;
+      ctx.fillStyle = currentTool === 'eraser' ? PAPER_COLOR : currentColor;
+      ctx.lineWidth = currentTool === 'eraser' ? 30 : 12;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(coords.x, coords.y);
+      ctx.stroke();
+
+      lastX = coords.x;
+      lastY = coords.y;
+    }
+
+    function stopDraw() {
+      isDrawing = false;
+    }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', stopDraw);
+
+    canvas.addEventListener('touchstart', (e) => { startDraw(e); e.preventDefault(); }, { passive: false });
+    canvas.addEventListener('touchmove', (e) => { draw(e); e.preventDefault(); }, { passive: false });
+    window.addEventListener('touchend', stopDraw);
+
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT') return;
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      }
+      if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') || ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'z')) {
+        e.preventDefault();
+        redo();
+      }
+    });
+
+    function clearCanvas() {
+      saveState();
+      ctx.fillStyle = PAPER_COLOR;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function loadPreset(type) {
+      if (!pigmentsUnlocked[0]) {
+        alert('Produz primeiro os pigmentos no Laboratório da Floresta!');
+        openCraftingModal();
+        return;
+      }
+      setColor(pigmentsInfo[0].color);
+      clearCanvas();
+      saveState();
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+
+      if (type === 'padrao') {
+        ctx.strokeStyle = '#111827';
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        for (let x = 50; x < canvas.width - 50; x += 40) {
+          ctx.moveTo(x, cy - 50);
+          ctx.lineTo(x + 20, cy + 50);
+          ctx.lineTo(x + 40, cy - 50);
+        }
+        ctx.stroke();
+        applyText('POVOS YANOMAMI', cx, cy + 120);
+      } else if (type === 'simetria') {
+        applyStamp('feather', cx, cy - 60);
+        applyStamp('arrow', cx - 120, cy);
+        applyStamp('arrow', cx + 120, cy);
+        applyText('POVO WAIÃPI', cx, cy + 100);
+      }
+    }
+
+    function exportPNG() {
+      const link = document.createElement('a');
+      link.download = `CriaNauta_ArteIndigena_${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    window.onload = function() {
+      initCanvas();
+    };
+  </script>
+</body>
+</html>

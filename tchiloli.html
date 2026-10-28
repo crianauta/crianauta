@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="favicon_CriaNauta.png">
+  <title>Oficina de Tchiloli e Máscaras — CriaNauta</title>
+  
+  <!-- Google Fonts: Fredoka & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { 800: '#0B253C', 900: '#071828' },
+            royal: { 800: '#7E1F28', 900: '#4A1016' },
+            paper: '#FDFBF7'
+          },
+          fontFamily: {
+            title: ['Fredoka', 'sans-serif'],
+            body: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #FDFBF7; color: #0B253C; }
+    h1, h2, h3, h4, .font-title { font-family: 'Fredoka', sans-serif; }
+    .stage-bg {
+      background-color: #F4EAD2;
+      background-image: radial-gradient(#D5C5A5 1.5px, transparent 1.5px);
+      background-size: 20px 20px;
+    }
+    .tool-btn.selected, .stamp-btn.selected { border-color: #7E1F28; background-color: #FEE2E2; box-shadow: 0 0 0 2px rgba(126, 31, 40, 0.3); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-rose-800 selection:text-white">
+
+  <!-- CABEÇALHO / NAVEGAÇÃO -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-3 group">
+        <img src="logo_CriaNauta_3.png" alt="Logótipo CriaNauta" class="h-12 w-auto object-contain transition-transform group-hover:scale-105" onerror="this.src='logo_CriaNauta_2.png'">
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-title px-4 py-2 rounded-full text-sm transition-all border border-slate-200">
+          <i class="fa-solid fa-arrow-left text-xs"></i>
+          <span>Voltar ao Início</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col gap-6">
+
+    <!-- HERO INTRO -->
+    <section class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+      <div>
+        <span class="inline-block px-2.5 py-0.5 bg-rose-500/10 text-rose-800 text-xs font-bold rounded mb-1">TEATRO TRADICIONAL & PATRIMÓNIO</span>
+        <h1 class="text-2xl sm:text-3xl font-bold text-navy-800">Oficina de Tchiloli e Máscaras</h1>
+        <p class="text-slate-600 text-sm">Cria coroas coloridas, adereços e vestimentas inspiradas no teatro cantado do Tchiloli de São Tomé e Príncipe.</p>
+      </div>
+
+      <!-- Presets -->
+      <div class="flex items-center gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200 flex-wrap">
+        <span class="text-xs font-bold text-navy-800 px-2 font-title">Inspirações:</span>
+        <button onclick="loadPreset('coroa')" class="px-2.5 py-1.5 bg-white hover:bg-rose-50 text-slate-700 hover:text-rose-800 border border-slate-200 rounded-lg text-xs font-semibold transition-all">👑 Coroa Real</button>
+        <button onclick="loadPreset('teatro')" class="px-2.5 py-1.5 bg-white hover:bg-rose-50 text-slate-700 hover:text-rose-800 border border-slate-200 rounded-lg text-xs font-semibold transition-all">🎭 Cenário Tchiloli</button>
+      </div>
+    </section>
+
+    <!-- WORKSPACE -->
+    <div class="grid lg:grid-cols-12 gap-6 items-start">
+
+      <!-- TOOLS PANEL -->
+      <aside class="lg:col-span-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-5">
+        <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+          <h2 class="font-title font-bold text-navy-800 text-lg">Adereços & Pintura</h2>
+          <span class="text-xs bg-rose-100 text-rose-800 font-semibold px-2 py-0.5 rounded">Cenógrafo</span>
+        </div>
+
+        <!-- UNDO / REDO -->
+        <div class="flex items-center justify-between gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200">
+          <button onclick="undo()" id="undoBtn" class="flex-1 py-1.5 px-2 bg-white hover:bg-slate-100 disabled:opacity-40 text-slate-700 rounded-lg text-xs font-bold border border-slate-200 flex items-center justify-center gap-1.5 transition-all">
+            <i class="fa-solid fa-rotate-left"></i> Desfazer
+          </button>
+          <button onclick="redo()" id="redoBtn" class="flex-1 py-1.5 px-2 bg-white hover:bg-slate-100 disabled:opacity-40 text-slate-700 rounded-lg text-xs font-bold border border-slate-200 flex items-center justify-center gap-1.5 transition-all">
+            <i class="fa-solid fa-rotate-right"></i> Refazer
+          </button>
+        </div>
+
+        <!-- DRAWING TOOLS -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Modo de Ação</label>
+          <div class="grid grid-cols-4 gap-1.5">
+            <button onclick="setTool('brush')" id="toolBrush" class="tool-btn selected flex flex-col items-center p-2 rounded-xl border-2 border-rose-800 bg-rose-50 text-rose-900 font-medium text-[10px] gap-1 transition-all">
+              <i class="fa-solid fa-paintbrush"></i><span>Pincel</span>
+            </button>
+            <button onclick="setTool('eraser')" id="toolEraser" class="tool-btn flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-medium text-[10px] gap-1 transition-all">
+              <i class="fa-solid fa-eraser"></i><span>Borracha</span>
+            </button>
+            <button onclick="setTool('stamp')" id="toolStamp" class="tool-btn flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-medium text-[10px] gap-1 transition-all">
+              <i class="fa-solid fa-crown"></i><span>Adereço</span>
+            </button>
+            <button onclick="setTool('text')" id="toolText" class="tool-btn flex flex-col items-center p-2 rounded-xl border-2 border-slate-200 bg-white text-slate-700 font-medium text-[10px] gap-1 transition-all">
+              <i class="fa-solid fa-font"></i><span>Texto</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- TEXT CONTROLS -->
+        <div id="textControls" class="hidden space-y-2 p-3 bg-rose-50 rounded-xl border border-rose-200">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Legenda / Personagem</label>
+          <input type="text" id="tchiloliTextInput" placeholder="Ex: MARQUÊS DE MANTUA" class="w-full text-xs font-semibold bg-white border border-slate-300 rounded-lg p-2 text-stone-900 outline-none focus:border-rose-800">
+          <div class="space-y-1">
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold text-navy-800">Tamanho</span>
+              <span id="textSizeVal" class="font-mono font-bold text-rose-900">24px</span>
+            </div>
+            <input type="range" id="textSizeRange" min="14" max="48" value="24" oninput="updateTextSize(this.value)" class="w-full accent-rose-800 cursor-pointer">
+          </div>
+        </div>
+
+        <!-- STAMPS CATALOG (EXPANDIDO) -->
+        <div id="stampControls" class="hidden space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Adereços & Símbolos (Usa a cor selecionada)</label>
+          <div class="grid grid-cols-4 gap-2">
+            <button onclick="setStamp('crown')" id="stampCrown" class="stamp-btn selected p-2 bg-slate-50 hover:bg-rose-50 border-2 border-rose-800 rounded-xl text-stone-800 font-bold text-base" title="Coroa Real">👑</button>
+            <button onclick="setStamp('mask')" id="stampMask" class="stamp-btn p-2 bg-slate-50 hover:bg-rose-50 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Máscara Teatral">🎭</button>
+            <button onclick="setStamp('sword')" id="stampSword" class="stamp-btn p-2 bg-slate-50 hover:bg-rose-50 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Espada">⚔️</button>
+            <button onclick="setStamp('shield')" id="stampShield" class="stamp-btn p-2 bg-slate-50 hover:bg-rose-50 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Escudo">🛡️</button>
+            <button onclick="setStamp('feather')" id="stampFeather" class="stamp-btn p-2 bg-slate-50 hover:bg-rose-50 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Pluma">🪶</button>
+            <button onclick="setStamp('flower')" id="stampFlower" class="stamp-btn p-2 bg-slate-50 hover:bg-rose-50 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Flor Tropical">🌺</button>
+            <button onclick="setStamp('drum')" id="stampDrum" class="stamp-btn p-2 bg-slate-50 hover:bg-rose-50 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Tambor">🪘</button>
+            <button onclick="setStamp('star')" id="stampStar" class="stamp-btn p-2 bg-slate-50 hover:bg-rose-50 border-2 border-slate-200 rounded-xl text-stone-800 font-bold text-base" title="Estrela de Honra">⭐</button>
+          </div>
+
+          <div class="space-y-1.5 pt-2">
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold text-navy-800">Tamanho do Adereço</span>
+              <span id="stampSizeVal" class="font-mono font-bold text-rose-900">60px</span>
+            </div>
+            <input type="range" id="stampSizeRange" min="30" max="120" value="60" oninput="updateStampSize(this.value)" class="w-full accent-rose-800 cursor-pointer">
+          </div>
+        </div>
+
+        <!-- PALETA DE CORES EXPANDIDA (CULTURA TROPICAL & FESTIVA) -->
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-navy-800 uppercase tracking-wider">Paleta de Cores Vivas</label>
+          <div class="grid grid-cols-4 gap-2">
+            <button onclick="setColor('#7E1F28')" id="colRed" class="color-btn p-2 rounded-xl bg-[#7E1F28] border-2 border-rose-900 ring-2 h-9" title="Vermelho Imperial"></button>
+            <button onclick="setColor('#1E3A8A')" id="colBlue" class="color-btn p-2 rounded-xl bg-[#1E3A8A] border-2 border-slate-200 h-9" title="Azul Real"></button>
+            <button onclick="setColor('#B45309')" id="colGold" class="color-btn p-2 rounded-xl bg-[#B45309] border-2 border-slate-200 h-9" title="Dourado"></button>
+            <button onclick="setColor('#065F46')" id="colGreen" class="color-btn p-2 rounded-xl bg-[#065F46] border-2 border-slate-200 h-9" title="Verde Esmeralda"></button>
+            <button onclick="setColor('#DB2777')" id="colPink" class="color-btn p-2 rounded-xl bg-[#DB2777] border-2 border-slate-200 h-9" title="Rosa Tropical"></button>
+            <button onclick="setColor('#D97706')" id="colOrange" class="color-btn p-2 rounded-xl bg-[#D97706] border-2 border-slate-200 h-9" title="Laranja Solar"></button>
+            <button onclick="setColor('#4338CA')" id="colIndigo" class="color-btn p-2 rounded-xl bg-[#4338CA] border-2 border-slate-200 h-9" title="Índigo"></button>
+            <button onclick="setColor('#111827')" id="colBlack" class="color-btn p-2 rounded-xl bg-[#111827] border-2 border-slate-200 h-9" title="Preto Contraste"></button>
+          </div>
+        </div>
+
+        <!-- RESET -->
+        <div class="pt-3 border-t border-slate-100">
+          <button onclick="clearCanvas()" class="w-full py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition-all">
+            <i class="fa-solid fa-trash-can mr-1"></i> Limpar Palco
+          </button>
+        </div>
+      </aside>
+
+      <!-- MAIN CANVAS DISPLAY -->
+      <section class="lg:col-span-6 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-title font-bold text-navy-800 text-lg">Palco de S. Tomé e Príncipe</h2>
+            <p id="modeHint" class="text-xs text-slate-500">Modo atual: Pincel livre de cenografia.</p>
+          </div>
+          <button onclick="exportPNG()" class="inline-flex items-center gap-2 bg-rose-800 hover:bg-rose-900 text-white text-xs font-bold font-title px-4 py-2 rounded-xl shadow transition-all">
+            <i class="fa-solid fa-download"></i> Guardar Criação (PNG)
+          </button>
+        </div>
+
+        <!-- Stage Frame -->
+        <div class="stage-bg relative w-full aspect-[4/3] border-8 border-[#4A1016] rounded-2xl p-6 shadow-2xl flex items-center justify-center overflow-hidden">
+          <canvas id="tchiloliCanvas" width="600" height="450" class="w-full h-full block cursor-crosshair rounded-sm shadow-inner bg-[#FDFBF7] touch-none"></canvas>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-slate-500 font-medium pt-1">
+          <span><i class="fa-solid fa-keyboard text-rose-800 mr-1"></i> Atalhos (Ctrl+Z / Ctrl+Y)</span>
+          <span>Tradição do Tchiloli</span>
+        </div>
+      </section>
+
+      <!-- EDUCATIONAL & CULTURE PANEL -->
+      <aside class="lg:col-span-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-4">
+        <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+          <h2 class="font-title font-bold text-navy-800 text-lg">O Tchiloli</h2>
+          <span class="text-xs bg-rose-100 text-rose-800 font-semibold px-2 py-0.5 rounded">Cultura</span>
+        </div>
+
+        <div class="space-y-3 text-xs text-slate-600 leading-relaxed">
+          <div class="p-3 bg-rose-50 rounded-xl border border-rose-200 space-y-1">
+            <strong class="text-navy-800 font-title text-sm flex items-center gap-1.5">
+              <i class="fa-solid fa-masks-theater text-rose-800"></i> Cores e Tradição
+            </strong>
+            <p>Os trajes do Tchiloli e as festividades de São Tomé e Príncipe destacam-se pelo uso de cores vivas e sumptuosas que celebram a alegria e a herança histórica da comunidade.</p>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-navy-900 text-slate-300 py-10 border-t border-navy-800 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between gap-6">
+      
+      <!-- IDENTIDADE & DIREITOS -->
+      <div class="flex flex-col items-center lg:items-start gap-2 text-center lg:text-left">
+        <div class="flex items-center gap-3">
+          <img src="logo_CriaNauta_3.png" alt="CriaNauta" class="h-8 w-auto object-contain brightness-200" onerror="this.src='logo_CriaNauta_2.png'">
+        </div>
+        <p class="text-xs text-slate-400 max-w-xs">
+          Artefactos pedagógicos digitais para explorar o património dos países de língua oficial portuguesa no 1.º Ciclo.
+        </p>
+        <span class="text-[11px] text-slate-500 mt-1">© 2026 CriaNauta · Todos os direitos reservados</span>
+      </div>
+
+      <!-- CARTÕES PADRONIZADOS (INSTAGRAM & GOFUNDME) -->
+      <div class="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
+        
+        <!-- CARTÃO 1: INSTAGRAM -->
+        <a href="https://www.instagram.com/crianauta_aprendizagem/" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto flex items-center gap-3 bg-navy-800/80 hover:bg-navy-800 p-3.5 rounded-2xl border border-slate-700/60 hover:border-amber-500/50 transition-all shadow-inner group">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 flex items-center justify-center text-white text-xl shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform">
+            <i class="fa-brands fa-instagram"></i>
+          </div>
+          <div class="text-left">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-bold text-white group-hover:text-amber-400 transition-colors">Segue o CriaNauta</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-slate-400"></i>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-0.5">@crianauta_aprendizagem</p>
+          </div>
+        </a>
+
+        <!-- CARTÃO 2: GOFUNDME (EM BREVE) -->
+        <div class="w-full sm:w-auto flex items-center gap-3 bg-navy-800/80 p-3.5 rounded-2xl border border-slate-700/60 shadow-inner">
+          <img src="gofundme.png" alt="Apoiar no GoFundMe" class="h-10 w-10 object-contain rounded-xl flex-shrink-0" onerror="this.style.display='none'">
+          <div class="text-left">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-white">Apoia o CriaNauta</span>
+              <span class="text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded">Em Breve</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-0.5">Ajuda a expandir o ecossistema</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT TCHILOLI ENGINE -->
+  <script>
+    const canvas = document.getElementById('tchiloliCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const PAPER_COLOR = '#FDFBF7';
+    let currentColor = '#7E1F28';
+    let currentTool = 'brush'; // 'brush', 'eraser', 'stamp', 'text'
+    let currentStamp = 'crown';
+    let stampSize = 60;
+    let textSize = 24;
+
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    let undoStack = [];
+    let redoStack = [];
+
+    function saveState() {
+      undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      redoStack = [];
+      updateUndoRedoUI();
+    }
+
+    function undo() {
+      if (undoStack.length === 0) return;
+      redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      const prev = undoStack.pop();
+      ctx.putImageData(prev, 0, 0);
+      updateUndoRedoUI();
+    }
+
+    function redo() {
+      if (redoStack.length === 0) return;
+      undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      const next = redoStack.pop();
+      ctx.putImageData(next, 0, 0);
+      updateUndoRedoUI();
+    }
+
+    function updateUndoRedoUI() {
+      document.getElementById('undoBtn').disabled = undoStack.length === 0;
+      document.getElementById('redoBtn').disabled = redoStack.length === 0;
+    }
+
+    function initCanvas() {
+      ctx.fillStyle = PAPER_COLOR;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      saveState();
+    }
+
+    function setColor(color) {
+      currentColor = color;
+      document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('border-rose-900', 'ring-2'));
+      const map = {
+        '#7E1F28': 'colRed', '#1E3A8A': 'colBlue', '#B45309': 'colGold', '#065F46': 'colGreen',
+        '#DB2777': 'colPink', '#D97706': 'colOrange', '#4338CA': 'colIndigo', '#111827': 'colBlack'
+      };
+      if (map[color] && document.getElementById(map[color])) {
+        document.getElementById(map[color]).classList.add('border-rose-900', 'ring-2');
+      }
+    }
+
+    function setTool(tool) {
+      currentTool = tool;
+      ['toolBrush', 'toolEraser', 'toolStamp', 'toolText'].forEach(id => {
+        document.getElementById(id).classList.remove('selected', 'border-rose-800', 'bg-rose-50', 'text-rose-900');
+        document.getElementById(id).classList.add('border-slate-200', 'bg-white', 'text-slate-700');
+      });
+
+      document.getElementById('textControls').classList.add('hidden');
+      document.getElementById('stampControls').classList.add('hidden');
+
+      if (tool === 'brush') {
+        document.getElementById('toolBrush').classList.add('selected', 'border-rose-800', 'bg-rose-50', 'text-rose-900');
+        document.getElementById('modeHint').innerText = 'Modo atual: Pincel livre de cenografia.';
+      } else if (tool === 'eraser') {
+        document.getElementById('toolEraser').classList.add('selected', 'border-rose-800', 'bg-rose-50', 'text-rose-900');
+        document.getElementById('modeHint').innerText = 'Modo atual: Borracha (limpar traços).';
+      } else if (tool === 'stamp') {
+        document.getElementById('toolStamp').classList.add('selected', 'border-rose-800', 'bg-rose-50', 'text-rose-900');
+        document.getElementById('stampControls').classList.remove('hidden');
+        document.getElementById('modeHint').innerText = 'Modo atual: Aplicar Adereço com cor selecionada.';
+      } else if (tool === 'text') {
+        document.getElementById('toolText').classList.add('selected', 'border-rose-800', 'bg-rose-50', 'text-rose-900');
+        document.getElementById('textControls').classList.remove('hidden');
+        document.getElementById('modeHint').innerText = 'Modo atual: Inserir Legenda/Personagem.';
+      }
+    }
+
+    function setStamp(stamp) {
+      currentStamp = stamp;
+      document.querySelectorAll('.stamp-btn').forEach(btn => btn.classList.remove('selected', 'border-rose-800', 'bg-rose-50'));
+      const map = { 
+        'crown': 'stampCrown', 'mask': 'stampMask', 'sword': 'stampSword', 
+        'shield': 'stampShield', 'feather': 'stampFeather', 'flower': 'stampFlower',
+        'drum': 'stampDrum', 'star': 'stampStar' 
+      };
+      if (map[stamp]) {
+        document.getElementById(map[stamp]).classList.add('selected', 'border-rose-800', 'bg-rose-50');
+      }
+    }
+
+    function updateStampSize(val) {
+      stampSize = Number(val);
+      document.getElementById('stampSizeVal').innerText = `${stampSize}px`;
+    }
+
+    function updateTextSize(val) {
+      textSize = Number(val);
+      document.getElementById('textSizeVal').innerText = `${textSize}px`;
+    }
+
+    function getCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: (clientX - rect.left) * (canvas.width / rect.width),
+        y: (clientY - rect.top) * (canvas.height / rect.height)
+      };
+    }
+
+    function applyStamp(shape, cx, cy) {
+      saveState();
+      ctx.save();
+      ctx.translate(cx, cy);
+      const s = stampSize / 60;
+      ctx.scale(s, s);
+      ctx.fillStyle = currentColor;
+      ctx.strokeStyle = currentColor;
+
+      if (shape === 'crown') {
+        ctx.beginPath();
+        ctx.moveTo(-30, 20);
+        ctx.lineTo(-30, -10);
+        ctx.lineTo(-15, 0);
+        ctx.lineTo(0, -25);
+        ctx.lineTo(15, 0);
+        ctx.lineTo(30, -10);
+        ctx.lineTo(30, 20);
+        ctx.closePath();
+        ctx.fill();
+      } else if (shape === 'mask') {
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 25, 32, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = PAPER_COLOR;
+        ctx.beginPath();
+        ctx.arc(-8, -5, 5, 0, Math.PI * 2);
+        ctx.arc(8, -5, 5, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (shape === 'sword') {
+        ctx.fillRect(-3, -35, 6, 50);
+        ctx.fillRect(-12, 10, 24, 4);
+        ctx.fillRect(-4, 14, 8, 15);
+      } else if (shape === 'shield') {
+        ctx.beginPath();
+        ctx.moveTo(0, -30);
+        ctx.lineTo(25, -15);
+        ctx.lineTo(20, 20);
+        ctx.lineTo(0, 35);
+        ctx.lineTo(-20, 20);
+        ctx.lineTo(-25, -15);
+        ctx.closePath();
+        ctx.fill();
+      } else if (shape === 'feather') {
+        ctx.beginPath();
+        ctx.moveTo(0, 30);
+        ctx.quadraticCurveTo(-25, 0, 0, -35);
+        ctx.quadraticCurveTo(25, 0, 0, 30);
+        ctx.fill();
+      } else if (shape === 'flower') {
+        for (let i = 0; i < 6; i++) {
+          const angle = (i * Math.PI) / 3;
+          ctx.beginPath();
+          ctx.arc(Math.cos(angle) * 12, Math.sin(angle) * 12, 10, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.beginPath();
+        ctx.arc(0, 0, 8, 0, Math.PI * 2);
+        ctx.fillStyle = '#FEF08A';
+        ctx.fill();
+      } else if (shape === 'drum') {
+        ctx.fillRect(-18, -20, 36, 40);
+        ctx.strokeStyle = '#FDFBF7';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(-18, -20, 36, 40);
+      } else if (shape === 'star') {
+        ctx.beginPath();
+        for (let i = 0; i < 5; i++) {
+          ctx.lineTo(Math.cos((18 + i * 72) * Math.PI / 180) * 25, -Math.sin((18 + i * 72) * Math.PI / 180) * 25);
+          ctx.lineTo(Math.cos((54 + i * 72) * Math.PI / 180) * 12, -Math.sin((54 + i * 72) * Math.PI / 180) * 12);
+        }
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    function applyText(text, cx, cy) {
+      if (!text || text.trim() === '') return;
+      saveState();
+      ctx.fillStyle = currentColor;
+      ctx.font = `bold ${textSize}px Fredoka, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(text, cx, cy);
+    }
+
+    function startDraw(e) {
+      const coords = getCoords(e);
+      if (currentTool === 'stamp') {
+        applyStamp(currentStamp, coords.x, coords.y);
+        return;
+      }
+      if (currentTool === 'text') {
+        const txt = document.getElementById('tchiloliTextInput').value;
+        applyText(txt, coords.x, coords.y);
+        return;
+      }
+
+      isDrawing = true;
+      saveState();
+      lastX = coords.x;
+      lastY = coords.y;
+    }
+
+    function draw(e) {
+      if (!isDrawing || (currentTool !== 'brush' && currentTool !== 'eraser')) return;
+      const coords = getCoords(e);
+
+      ctx.strokeStyle = currentTool === 'eraser' ? PAPER_COLOR : currentColor;
+      ctx.fillStyle = currentTool === 'eraser' ? PAPER_COLOR : currentColor;
+      ctx.lineWidth = currentTool === 'eraser' ? 30 : 14;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(coords.x, coords.y);
+      ctx.stroke();
+
+      lastX = coords.x;
+      lastY = coords.y;
+    }
+
+    function stopDraw() {
+      isDrawing = false;
+    }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', stopDraw);
+
+    canvas.addEventListener('touchstart', (e) => { startDraw(e); e.preventDefault(); }, { passive: false });
+    canvas.addEventListener('touchmove', (e) => { draw(e); e.preventDefault(); }, { passive: false });
+    window.addEventListener('touchend', stopDraw);
+
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT') return;
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      }
+      if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') || ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'z')) {
+        e.preventDefault();
+        redo();
+      }
+    });
+
+    function clearCanvas() {
+      saveState();
+      ctx.fillStyle = PAPER_COLOR;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function loadPreset(type) {
+      clearCanvas();
+      saveState();
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+
+      if (type === 'coroa') {
+        applyStamp('crown', cx, cy - 40);
+        applyStamp('feather', cx - 80, cy - 30);
+        applyStamp('feather', cx + 80, cy - 30);
+        applyText('VOSSA MAJESTADE', cx, cy + 90);
+      } else if (type === 'teatro') {
+        applyStamp('mask', cx - 100, cy - 50);
+        applyStamp('sword', cx + 100, cy - 50);
+        applyStamp('flower', cx, cy - 20);
+        applyText('TCHILOLI · SÃO TOMÉ', cx, cy + 120);
+      }
+    }
+
+    function exportPNG() {
+      const link = document.createElement('a');
+      link.download = `CriaNauta_Tchiloli_${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    window.onload = function() {
+      initCanvas();
+    };
+  </script>
+</body>
+</html>
